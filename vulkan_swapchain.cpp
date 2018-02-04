@@ -5,6 +5,8 @@
 #include "vulkan_surface.hpp"
 #include "vulkan_device.hpp"
 
+#include <algorithm>
+
 using namespace vk_terrain_demo;
 
 vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : m_surface{t_surface}, m_device{t_device} {
@@ -41,6 +43,11 @@ void vk::swapchain::choose_surface_format() {
 	m_surface_format = m_device.get_surface_formats()[0];
 }
 
+const VkExtent2D& vk::swapchain::get_extent() const {
+	
+	return m_extent;
+}
+
 void vk::swapchain::choose_present_mode() {
 	
 	m_present_mode = VK_PRESENT_MODE_FIFO_KHR;
@@ -67,7 +74,9 @@ void vk::swapchain::choose_present_mode() {
 
 void vk::swapchain::choose_surface_extent() {
 	
-	m_extent = m_device.get_capabilities().currentExtent;
+	const VkSurfaceCapabilitiesKHR& capabilities = m_device.get_capabilities();
+	m_extent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, static_cast<uint32_t>(1280)));
+	m_extent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, static_cast<uint32_t>(720)));
 }
 
 void vk::swapchain::create_swapchain() {

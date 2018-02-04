@@ -20,6 +20,8 @@ namespace vk_terrain_demo {
 			vk::surface& get_surface();
 			vk::device& get_device();
 			
+			const VkExtent2D& get_extent() const;
+			
 			private:
 			
 			void choose_surface_extent();

@@ -6,6 +6,7 @@
 #include "vulkan_surface.hpp"
 #include "vulkan_device.hpp"
 #include "vulkan_swapchain.hpp"
+#include "vulkan_graphics_pipeline.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -13,7 +14,7 @@
 using namespace vk_terrain_demo;
 
 vk::context::context(window& t_window) 
-	: m_window{t_window}, m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr} {
+	: m_window{t_window}, m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr}, m_graphics_pipeline{nullptr} {
 	
 	if (!is_validation_supported()) {
 		
@@ -23,9 +24,15 @@ vk::context::context(window& t_window)
 	m_surface = new vk::surface(m_window, *m_instance);
 	m_device = new vk::device(*m_instance, *m_surface);
 	m_swapchain = new vk::swapchain(*m_surface, *m_device);
+	m_graphics_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
 }
 
 vk::context::~context() {
+	
+	if (m_graphics_pipeline) {
+		
+		delete m_graphics_pipeline;
+	}
 	
 	if (m_swapchain) {
 		
