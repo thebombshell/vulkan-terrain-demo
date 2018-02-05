@@ -48,6 +48,21 @@ const VkExtent2D& vk::swapchain::get_extent() const {
 	return m_extent;
 }
 
+const VkSurfaceFormatKHR& vk::swapchain::get_surface_format() const {
+	
+	return m_surface_format;
+}
+
+const VkPresentModeKHR& vk::swapchain::get_present_mode() const {
+	
+	return m_present_mode;
+}
+
+VkSwapchainKHR& vk::swapchain::get_swapchain() {
+	
+	return m_swapchain;
+}
+
 void vk::swapchain::choose_present_mode() {
 	
 	m_present_mode = VK_PRESENT_MODE_FIFO_KHR;

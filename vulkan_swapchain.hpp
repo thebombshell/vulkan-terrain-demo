@@ -21,6 +21,9 @@ namespace vk_terrain_demo {
 			vk::device& get_device();
 			
 			const VkExtent2D& get_extent() const;
+			const VkSurfaceFormatKHR& get_surface_format() const;
+			const VkPresentModeKHR& get_present_mode() const;
+			VkSwapchainKHR& get_swapchain();
 			
 			private:
 			
