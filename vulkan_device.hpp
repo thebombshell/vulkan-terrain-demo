@@ -1,67 +1,55 @@
 
-// /vulkan_device.hpp
+// vulkan_device.hpp
+//
+// header file for the RAII wrapper of the VkPhysicalDevice and VkDevice
+//
+// author - Scott R Howell - https://github.com/thebombshell
+// copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
-#ifndef VK_TERRAIN_DEMO_VULKAN_DEVICE_HPP
-#define VK_TERRAIN_DEMO_VULKAN_DEVICE_HPP
+#ifndef VKCPP_VULKAN_DEVICE_HPP
+#define VKCPP_VULKAN_DEVICE_HPP
 
 #include "vulkan.hpp"
 
-namespace vk_terrain_demo {
+namespace vk {
 	
-	namespace vk {
+	class device {
 		
-		class device {
-			
-			public:
-			
-			device(vk::instance& t_instance, vk::surface& t_surface);
-			~device();
-			
-			vk::instance& get_instance();
-			vk::surface& get_surface();
-			
-			VkPhysicalDevice get_physical_device();
-			const std::vector<VkQueueFamilyProperties>& get_queue_families() const;
-			const std::vector<VkSurfaceFormatKHR>& get_surface_formats() const;
-			const std::vector<VkPresentModeKHR>& get_present_modes() const;
-			const VkSurfaceCapabilitiesKHR& get_capabilities() const;
-			
-			VkDevice get_device();
-			VkQueue get_logical_queue();
-			VkQueue get_present_queue();
-			
-			int get_graphics_family_index() const;
-			int get_present_family_index() const;
-			
-			float get_queue_priority() const;
-			void set_queue_priority(float t_value);
-			
-			private:
-			
-			int find_queue_families(VkPhysicalDevice& t_device);
-			int find_surface_capabilities(VkPhysicalDevice& t_device);
-			int is_physical_device_suitable(VkPhysicalDevice& t_device);
-			int find_physical_device();
-			void create_devices();
-			
-			vk::instance& m_instance;
-			vk::surface& m_surface;
-			
-			VkPhysicalDevice m_physical_device;
-			std::vector<VkQueueFamilyProperties> m_queue_families;
-			std::vector<VkSurfaceFormatKHR> m_surface_formats;
-			std::vector<VkPresentModeKHR> m_present_modes;
-			VkSurfaceCapabilitiesKHR m_surface_capability;
-			VkDevice m_device;
-			VkQueue m_logical_queue;
-			VkQueue m_present_queue;
-			
-			int m_graphics_family_index;
-			int m_present_family_index;
-			float m_queue_priority;
-			
-		};
-	}
+		public:
+		
+		device
+			( vk::physical_device& t_physical_device
+			, vk::surface& t_surface
+			, const char* const* t_layer_names, uint32_t t_layer_count
+			, const char* const* t_extension_names, uint32_t t_extension_count);
+		~device();
+		
+		vk::physical_device& get_physical_device();
+		const vk::physical_device& get_physical_device() const;
+		VkDevice get_device() const;
+		VkQueue get_graphical_queue() const;
+		VkQueue get_present_queue() const;
+		
+		int get_graphical_queue_family_index() const;
+		int get_present_queue_family_index() const;
+		
+		float get_queue_priority() const;
+		void set_queue_priority(float t_value);
+		
+		private:
+		
+		vk::physical_device& m_physical_device;
+		vk::surface& m_surface;
+		
+		VkDevice m_device;
+		int m_graphical_queue_family_index;
+		int m_present_queue_family_index;
+		VkQueue m_graphical_queue;
+		VkQueue m_present_queue;
+		
+		float m_queue_priority;
+		
+	};
 }
 
 #endif

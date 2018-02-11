@@ -1,28 +1,48 @@
 
-// /vulkan_context.cpp
+// vulkan_context.cpp
+//
+// source file for the VKCPP all encompassing graphical context, intended to contain complex vulkan procedures and make
+// graphics experiments easier and faster to produce
+//
+// author - Scott R Howell - https://github.com/thebombshell
+// copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
 #include "vulkan_context.hpp"
 #include "vulkan_instance.hpp"
-#include "vulkan_surface.hpp"
+#include "vulkan_physical_device.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_surface.hpp"
 #include "vulkan_swapchain.hpp"
 #include "vulkan_graphics_pipeline.hpp"
 
 #include <algorithm>
 #include <iostream>
 
-using namespace vk_terrain_demo;
-
-vk::context::context(window& t_window) 
-	: m_window{t_window}, m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr}, m_graphics_pipeline{nullptr} {
+vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
+	: m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr}, m_graphics_pipeline{nullptr} {
 	
-	if (!is_validation_supported()) {
+	const char* const instance_layers[] = {
+		"VK_LAYER_LUNARG_standard_validation"
+	};
+	const char* const instance_extensions[] = {
+		"VK_KHR_surface", "VK_KHR_win32_surface", VK_EXT_DEBUG_REPORT_EXTENSION_NAME
+	};
+	const char* const device_extensions[] = {
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+	};
+	m_instance = new vk::instance( instance_layers, 1, instance_extensions, 2);
+	m_validation = new vk::validation(*m_instance);
+	for (auto* t_physical_device : m_instance->get_physical_devices()) {
 		
-		throw std::runtime_error("Requested validation layers are not supported.");
+		if ( t_physical_device->is_discrete_gpu() 
+			&& t_physical_device->has_geometry_shader()
+			&& t_physical_device->are_extensions_supported(device_extensions, 1)) {
+			
+			m_surface = new vk::surface(t_window_handle, t_handle_instance, *m_instance, *t_physical_device);
+			m_device = new vk::device(*t_physical_device, *m_surface, nullptr, 0, nullptr, 0);
+			break;
+		}
 	}
-	m_instance = new vk::instance();
-	m_surface = new vk::surface(m_window, *m_instance);
-	m_device = new vk::device(*m_instance, *m_surface);
 	m_swapchain = new vk::swapchain(*m_surface, *m_device);
 	m_graphics_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
 }
@@ -53,33 +73,4 @@ vk::context::~context() {
 		
 		delete m_instance;
 	}
-}
-
-int vk::context::is_validation_supported() {
-	
-	uint32_t layer_count;
-	VK_DEBUG
-		( vkEnumerateInstanceLayerProperties
-		, "Failed to get instance layer count"
-		, &layer_count, nullptr)
-	
-	std::vector<VkLayerProperties> layer_properties{layer_count};
-	VK_DEBUG
-		( vkEnumerateInstanceLayerProperties
-		, "Failed to get instance layer properties"
-		, &layer_count, layer_properties.data())
-	
-	uint32_t matching_layer_count = 0;
-	auto begin = g_validation_layer_strings.begin();
-	auto end = g_validation_layer_strings.end();
-	
-	for (const auto& t_property : layer_properties) {
-		
-		if (std::find(begin, end, std::string(t_property.layerName)) != end) {
-			
-			++matching_layer_count;
-		}
-	}
-	
-	return matching_layer_count == g_validation_layer_strings.size();
 }

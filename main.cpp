@@ -13,7 +13,7 @@ int main() {
 	try {
 		
 		window app_window{"vulkan terrain demo", 1280, 720};
-		vk::context vulkan{app_window};
+		vk::context vulkan {app_window.get_handle(), GetModuleHandle(0)};
 		
 		app_window.run();
 	}

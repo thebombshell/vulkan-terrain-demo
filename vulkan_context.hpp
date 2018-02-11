@@ -1,35 +1,37 @@
 
 // vulkan_context.hpp
+//
+// header file for the VKCPP all encompassing graphical context, intended to contain complex vulkan procedures and make
+// graphics experiments easier and faster to produce
+//
+// author - Scott R Howell - https://github.com/thebombshell
+// copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
 #ifndef VK_TERRAIN_DEMO_VULKAN_CONTEXT_HPP
 #define VK_TERRAIN_DEMO_VULKAN_CONTEXT_HPP
 
 #include "vulkan.hpp"
-#include "window.hpp"
 
-namespace vk_terrain_demo {
-	
-	namespace vk {
-	
-		class context {
-			
-			public:
-			
-			context(window& t_window);
-			~context();
-			
-			private:
-			
-			int is_validation_supported();
-			
-			window& m_window;
-			vk::instance* m_instance;
-			vk::surface* m_surface;
-			vk::device* m_device;
-			vk::swapchain* m_swapchain;
-			vk::graphics_pipeline* m_graphics_pipeline;
-		};
-	}
+#include <windows.h>
+
+namespace vk {
+
+	class context {
+		
+		public:
+		
+		context(HWND t_window_handle, HINSTANCE t_instance_handle);
+		~context();
+		
+		private:
+		
+		vk::instance* m_instance;
+		vk::validation* m_validation;
+		vk::surface* m_surface;
+		vk::device* m_device;
+		vk::swapchain* m_swapchain;
+		vk::graphics_pipeline* m_graphics_pipeline;
+	};
 }
 
 #endif

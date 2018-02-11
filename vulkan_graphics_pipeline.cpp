@@ -1,20 +1,25 @@
 
-// /vulkan_graphics_pipeline.cpp
+// vulkan_graphics_pipeline.cpp
+//
+// source file for the RAII wrrapper of the VkGraphicsPipeline
+//
+// author - Scott R Howell - https://github.com/thebombshell
+// copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
 #include "vulkan_graphics_pipeline.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_shader_module.hpp"
 #include "vulkan_swapchain.hpp"
 
 #include <fstream>
 
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
-using namespace vk_terrain_demo;
-
-vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain) : m_device{t_device}, m_swapchain{t_swapchain} {
+vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain)
+	: m_device{t_device}, m_swapchain{t_swapchain}, m_vertex_shader_module{nullptr}, m_fragment_shader_module{nullptr} {
 	
-	create_shader_module_from_file("vert.spv", m_vertex_module);
-	create_shader_module_from_file("frag.spv", m_fragment_module);
+	m_vertex_shader_module = new vk::shader_module(m_device, "vert.spv");
+	m_fragment_shader_module = new vk::shader_module(m_device, "frag.spv");
 	create_pipeline();
 }
 
@@ -23,31 +28,14 @@ vk::graphics_pipeline::~graphics_pipeline() {
 	vkDestroyPipeline(m_device.get_device(), m_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_device.get_device(), m_pipeline_layout, nullptr);
 	vkDestroyRenderPass(m_device.get_device(), m_render_pass, nullptr);
-	vkDestroyShaderModule(m_device.get_device(), m_vertex_module, nullptr);
-	vkDestroyShaderModule(m_device.get_device(), m_fragment_module, nullptr);
-}
-
-void vk::graphics_pipeline::create_shader_module_from_file(const char* t_path, VkShaderModule& t_shader_module) {
-	
-	std::ifstream file(t_path, std::ios::binary | std::ios::ate);
-	std::streamsize size = file.tellg();
-	file.seekg(0, std::ios::beg);
-	std::vector<char> buffer(size);
-	if (!file.read(buffer.data(), size)) {
+	if (m_vertex_shader_module) {
 		
-		throw std::runtime_error(std::string("Could not load shader \"") + t_path + "\"");
+		delete m_vertex_shader_module;
 	}
-	
-	VkShaderModuleCreateInfo module_info = {};
-	module_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	module_info.pNext = nullptr;
-	module_info.flags = 0;
-	module_info.codeSize = size;
-	module_info.pCode = reinterpret_cast<const uint32_t*>(buffer.data());
-	VK_DEBUG
-		(vkCreateShaderModule
-		, std::string("Failed to create shader module at \"") + std::string(t_path) + "\""
-		, m_device.get_device(), &module_info, nullptr, &t_shader_module)
+	if (m_fragment_shader_module) {
+		
+		delete m_fragment_shader_module;
+	}
 }
 
 void vk::graphics_pipeline::create_pipeline() {
@@ -76,14 +64,14 @@ void vk::graphics_pipeline::create_pipeline() {
 	shader_stage_info[0].pNext = nullptr;
 	shader_stage_info[0].flags = 0;
 	shader_stage_info[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	shader_stage_info[0].module = m_vertex_module;
+	shader_stage_info[0].module = m_vertex_shader_module->get_shader_module();
 	shader_stage_info[0].pName = "main";
 	shader_stage_info[0].pSpecializationInfo = nullptr;
 	shader_stage_info[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	shader_stage_info[1].pNext = nullptr;
 	shader_stage_info[1].flags = 0;
 	shader_stage_info[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	shader_stage_info[1].module = m_fragment_module;
+	shader_stage_info[1].module = m_fragment_shader_module->get_shader_module();
 	shader_stage_info[1].pName = "main";
 	shader_stage_info[1].pSpecializationInfo = nullptr;
 	

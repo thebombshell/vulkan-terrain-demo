@@ -1,13 +1,19 @@
 
-// /vulkan_swapchain.hpp
+// vulkan_swapchain.cpp
+//
+// source file for the RAII wrapper of the VkSwapchainKHR
+//
+// author - Scott R Howell - https://github.com/thebombshell
+// copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
 #include "vulkan_swapchain.hpp"
-#include "vulkan_surface.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_image.hpp"
+#include "vulkan_image_view.hpp"
+#include "vulkan_physical_device.hpp"
+#include "vulkan_surface.hpp"
 
 #include <algorithm>
-
-using namespace vk_terrain_demo;
 
 vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : m_surface{t_surface}, m_device{t_device} {
 	
@@ -20,10 +26,16 @@ vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : m_surfa
 
 vk::swapchain::~swapchain() {
 	
-	for (VkImageView& t_image_view : m_image_views) {
+	for (vk::image_view* t_image_view : m_image_views) {
 		
-		vkDestroyImageView(m_device.get_device(), t_image_view, nullptr);
+		delete t_image_view;
 	}
+	m_image_views.clear();
+	for (vk::image_reference* t_swap_image : m_swap_images) {
+		
+		delete t_swap_image;
+	}
+	m_swap_images.clear();
 	vkDestroySwapchainKHR(m_device.get_device(), m_swapchain, nullptr);
 }
 
@@ -32,7 +44,7 @@ void vk::swapchain::choose_surface_format() {
 	m_surface_format.format = VK_FORMAT_B8G8R8A8_UNORM;
 	m_surface_format.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	
-	for (const auto& t_surface_format : m_device.get_surface_formats()) {
+	for (const auto& t_surface_format : m_surface.get_surface_formats()) {
 		
 		if (t_surface_format.format == m_surface_format.format && t_surface_format.colorSpace == m_surface_format.colorSpace) {
 			
@@ -40,25 +52,25 @@ void vk::swapchain::choose_surface_format() {
 		}
 	}
 	
-	m_surface_format = m_device.get_surface_formats()[0];
+	m_surface_format = m_surface.get_surface_formats()[0];
 }
 
-const VkExtent2D& vk::swapchain::get_extent() const {
+VkExtent2D vk::swapchain::get_extent() const {
 	
 	return m_extent;
 }
 
-const VkSurfaceFormatKHR& vk::swapchain::get_surface_format() const {
+VkSurfaceFormatKHR vk::swapchain::get_surface_format() const {
 	
 	return m_surface_format;
 }
 
-const VkPresentModeKHR& vk::swapchain::get_present_mode() const {
+VkPresentModeKHR vk::swapchain::get_present_mode() const {
 	
 	return m_present_mode;
 }
 
-VkSwapchainKHR& vk::swapchain::get_swapchain() {
+VkSwapchainKHR vk::swapchain::get_swapchain() const {
 	
 	return m_swapchain;
 }
@@ -67,7 +79,7 @@ void vk::swapchain::choose_present_mode() {
 	
 	m_present_mode = VK_PRESENT_MODE_FIFO_KHR;
 	
-	for (const auto& t_present_mode : m_device.get_present_modes()) {
+	for (const auto& t_present_mode : m_surface.get_present_modes()) {
 		
 		if (t_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
 			
@@ -89,14 +101,14 @@ void vk::swapchain::choose_present_mode() {
 
 void vk::swapchain::choose_surface_extent() {
 	
-	const VkSurfaceCapabilitiesKHR& capabilities = m_device.get_capabilities();
+	VkSurfaceCapabilitiesKHR capabilities = m_surface.get_surface_capabilities();
 	m_extent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, static_cast<uint32_t>(1280)));
 	m_extent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, static_cast<uint32_t>(720)));
 }
 
 void vk::swapchain::create_swapchain() {
 	
-	const VkSurfaceCapabilitiesKHR& capabilities = m_device.get_capabilities();
+	VkSurfaceCapabilitiesKHR capabilities = m_surface.get_surface_capabilities();
 	VkSwapchainCreateInfoKHR swapchain_info = {};
 	swapchain_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapchain_info.pNext = nullptr;
@@ -109,7 +121,7 @@ void vk::swapchain::create_swapchain() {
 	swapchain_info.imageArrayLayers = 1;
 	swapchain_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	
-	std::vector<uint32_t> family_indices = {static_cast<uint32_t>(m_device.get_graphics_family_index()), static_cast<uint32_t>(m_device.get_present_family_index())};
+	std::vector<uint32_t> family_indices = {static_cast<uint32_t>(m_device.get_graphical_queue_family_index()), static_cast<uint32_t>(m_device.get_present_queue_family_index())};
 	if (family_indices[0] != family_indices[1]) {
 		
 		swapchain_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -142,15 +154,13 @@ void vk::swapchain::create_swap_images() {
 		, "Failed to get swap chain image count"
 		, m_device.get_device(), m_swapchain, &image_count, nullptr)
 	
-	m_swap_images.resize(image_count);
+	std::vector<VkImage> swap_images{image_count};
 	VK_DEBUG
 		( vkGetSwapchainImagesKHR
 		, "Failed to get swap chain images"
-		, m_device.get_device(), m_swapchain, &image_count, m_swap_images.data())
+		, m_device.get_device(), m_swapchain, &image_count, swap_images.data())
 	
-	m_image_views.resize(image_count);
-	auto iter = m_image_views.begin();
-	for (VkImage& t_image : m_swap_images) {
+	for (const VkImage& t_image : swap_images) {
 		
 		VkImageViewCreateInfo image_view_info = {};
 		image_view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -169,10 +179,13 @@ void vk::swapchain::create_swap_images() {
 		image_view_info.subresourceRange.baseArrayLayer = 0;
 		image_view_info.subresourceRange.layerCount = 1;
 		
+		VkImageView image_view;
 		VK_DEBUG
 			( vkCreateImageView
 			, "Failed to create swap chain image view"
-			, m_device.get_device(), &image_view_info, nullptr, &(*iter))
-		++iter;
+			, m_device.get_device(), &image_view_info, nullptr, &image_view)
+		
+		m_swap_images.push_back(new vk::image_reference(t_image));
+		m_image_views.push_back(new vk::image_view(m_device, **(m_swap_images.end()--), m_surface_format.format));
 	}
 }
