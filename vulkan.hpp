@@ -105,8 +105,7 @@ namespace vk {
 	class semaphore;
 	class event;
 	class render_pass;
-	class frame_buffer;
-	class compute_pipeline;
+	class framebuffer;
 	class graphics_pipeline;
 	class shader_module;
 	class pipeline_cache;

@@ -1,13 +1,15 @@
 
-// vulkan_graphics_pipeline.cpp
+// vulkan_pipeline.cpp
 //
-// source file for the RAII wrrapper of the VkGraphicsPipeline
+// source file for the RAII wrrapper of the VkPipeline
 //
 // author - Scott R Howell - https://github.com/thebombshell
 // copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
-#include "vulkan_graphics_pipeline.hpp"
+#include "vulkan_pipeline.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_pipeline_layout.hpp"
+#include "vulkan_render_pass.hpp"
 #include "vulkan_shader_module.hpp"
 #include "vulkan_swapchain.hpp"
 
@@ -16,29 +18,12 @@
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
 vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain)
-	: m_device{t_device}, m_swapchain{t_swapchain}, m_vertex_shader_module{nullptr}, m_fragment_shader_module{nullptr} {
+	: m_device{t_device}, m_swapchain{t_swapchain}
+	, m_vertex_shader_module{nullptr}, m_fragment_shader_module{nullptr}
+	, m_pipeline_layout{nullptr}, m_render_pass{nullptr} {
 	
 	m_vertex_shader_module = new vk::shader_module(m_device, "vert.spv");
 	m_fragment_shader_module = new vk::shader_module(m_device, "frag.spv");
-	create_pipeline();
-}
-
-vk::graphics_pipeline::~graphics_pipeline() {
-	
-	vkDestroyPipeline(m_device.get_device(), m_pipeline, nullptr);
-	vkDestroyPipelineLayout(m_device.get_device(), m_pipeline_layout, nullptr);
-	vkDestroyRenderPass(m_device.get_device(), m_render_pass, nullptr);
-	if (m_vertex_shader_module) {
-		
-		delete m_vertex_shader_module;
-	}
-	if (m_fragment_shader_module) {
-		
-		delete m_fragment_shader_module;
-	}
-}
-
-void vk::graphics_pipeline::create_pipeline() {
 	
 	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_info;
 	VkVertexInputBindingDescription vertex_binding;
@@ -52,12 +37,9 @@ void vk::graphics_pipeline::create_pipeline() {
 	VkPipelineMultisampleStateCreateInfo multisample_info;
 	VkPipelineColorBlendAttachmentState color_blend_state;
 	VkPipelineColorBlendStateCreateInfo color_blend_info;
-	VkPipelineLayoutCreateInfo pipeline_layout_info;
 	VkAttachmentDescription color_attachment;
 	VkAttachmentReference color_attachment_reference;
 	VkSubpassDescription sub_pass;
-	VkRenderPassCreateInfo render_pass_info;
-	VkGraphicsPipelineCreateInfo pipeline_info;
 	
 	shader_stage_info.resize(2);
 	shader_stage_info[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -165,19 +147,6 @@ void vk::graphics_pipeline::create_pipeline() {
 	color_blend_info.blendConstants[2] = 0.0f;
 	color_blend_info.blendConstants[3] = 0.0f;
 	
-	pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipeline_layout_info.pNext = nullptr;
-	pipeline_layout_info.flags = 0;
-	pipeline_layout_info.setLayoutCount = 0;
-	pipeline_layout_info.pSetLayouts = nullptr;
-	pipeline_layout_info.pushConstantRangeCount = 0;
-	pipeline_layout_info.pPushConstantRanges = 0;
-
-	VK_DEBUG
-		( vkCreatePipelineLayout
-		, "Failed to create pipeline layout"
-		, m_device.get_device(), &pipeline_layout_info, nullptr, &m_pipeline_layout)
-	
 	color_attachment.flags = 0;
 	color_attachment.format = m_swapchain.get_surface_format().format;
 	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -202,21 +171,10 @@ void vk::graphics_pipeline::create_pipeline() {
 	sub_pass.preserveAttachmentCount = 0;
 	sub_pass.pPreserveAttachments = nullptr;
 	
-	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	render_pass_info.pNext = nullptr;
-	render_pass_info.flags = 0;
-	render_pass_info.attachmentCount = 1;
-	render_pass_info.pAttachments = &color_attachment;
-	render_pass_info.subpassCount = 1;
-	render_pass_info.pSubpasses = &sub_pass;
-	render_pass_info.dependencyCount = 0;
-	render_pass_info.pDependencies = nullptr;
+	m_pipeline_layout = new vk::pipeline_layout(m_device, nullptr, 0, nullptr, 0);
+	m_render_pass = new vk::render_pass(m_device, &color_attachment, 1, &sub_pass, 1);
 	
-	VK_DEBUG
-		( vkCreateRenderPass
-		, "Failed to create render pass."
-		, m_device.get_device(), &render_pass_info, nullptr, &m_render_pass)
-	
+	VkGraphicsPipelineCreateInfo pipeline_info = {};
 	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipeline_info.pNext = nullptr;
 	pipeline_info.flags = 0;
@@ -231,13 +189,36 @@ void vk::graphics_pipeline::create_pipeline() {
 	pipeline_info.pDepthStencilState = nullptr;
 	pipeline_info.pColorBlendState = &color_blend_info;
 	pipeline_info.pDynamicState = nullptr;
-	pipeline_info.layout = m_pipeline_layout;
-	pipeline_info.renderPass = m_render_pass;
+	pipeline_info.layout = m_pipeline_layout->get_pipeline_layout();
+	pipeline_info.renderPass = m_render_pass->get_render_pass();
 	pipeline_info.subpass = 0;
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex = -1;
+	
 	VK_DEBUG
 		(	vkCreateGraphicsPipelines
 		, "Failed to create graphics pipeline"
 		, m_device.get_device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &m_pipeline)
+}
+
+vk::graphics_pipeline::~graphics_pipeline() {
+	
+	vkDestroyPipeline(m_device.get_device(), m_pipeline, nullptr);
+	
+	if (m_pipeline_layout) {
+		
+		delete m_pipeline_layout;
+	}
+	if (m_render_pass) {
+		
+		delete m_render_pass;
+	}
+	if (m_vertex_shader_module) {
+		
+		delete m_vertex_shader_module;
+	}
+	if (m_fragment_shader_module) {
+		
+		delete m_fragment_shader_module;
+	}
 }

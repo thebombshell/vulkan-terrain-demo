@@ -30,7 +30,7 @@ namespace vk {
 		vk::surface* m_surface;
 		vk::device* m_device;
 		vk::swapchain* m_swapchain;
-		vk::graphics_pipeline* m_graphics_pipeline;
+		vk::graphics_pipeline* m_pipeline;
 	};
 }
 

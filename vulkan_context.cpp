@@ -13,13 +13,13 @@
 #include "vulkan_device.hpp"
 #include "vulkan_surface.hpp"
 #include "vulkan_swapchain.hpp"
-#include "vulkan_graphics_pipeline.hpp"
+#include "vulkan_pipeline.hpp"
 
 #include <algorithm>
 #include <iostream>
 
 vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
-	: m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr}, m_graphics_pipeline{nullptr} {
+	: m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr}, m_pipeline{nullptr} {
 	
 	const char* const instance_layers[] = {
 		"VK_LAYER_LUNARG_standard_validation"
@@ -44,14 +44,14 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 		}
 	}
 	m_swapchain = new vk::swapchain(*m_surface, *m_device);
-	m_graphics_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
+	m_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
 }
 
 vk::context::~context() {
 	
-	if (m_graphics_pipeline) {
+	if (m_pipeline) {
 		
-		delete m_graphics_pipeline;
+		delete m_pipeline;
 	}
 	
 	if (m_swapchain) {
