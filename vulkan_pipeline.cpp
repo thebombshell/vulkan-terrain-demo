@@ -199,6 +199,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 		(	vkCreateGraphicsPipelines
 		, "Failed to create graphics pipeline"
 		, m_device.get_device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &m_pipeline)
+	
 }
 
 vk::graphics_pipeline::~graphics_pipeline() {

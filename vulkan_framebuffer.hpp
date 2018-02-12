@@ -17,21 +17,21 @@ namespace vk {
 		
 		public:
 		
-		framebuffer(vk::device& t_device, vk::graphics_pipeline& t_pipeline);
+		framebuffer(vk::device& t_device, vk::render_pass& t_render_pass);
 		~framebuffer();
 		
 		vk::device& get_device();
 		const vk::device& get_device() const;
 		
-		vk::graphics_pipeline& get_pipeline();
-		const vk::graphics_pipeline& get_pipeline() const;
+		vk::render_pass& get_render_pass();
+		const vk::render_pass& get_render_pass() const;
 		
 		VkFramebuffer get_framebuffer();
 		
 		private:
 		
 		vk::device& m_device;
-		vk::graphics_pipeline& m_pipeline;
+		vk::render_pass& m_render_pass;
 		
 		VkFramebuffer m_framebuffer;
 	};

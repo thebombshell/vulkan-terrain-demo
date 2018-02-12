@@ -33,6 +33,7 @@ namespace vk {
 		vk::render_pass* m_render_pass;
 		
 		VkPipeline m_pipeline;
+		std::vector<vk::framebuffer*> m_framebuffers;
 	};
 }
 

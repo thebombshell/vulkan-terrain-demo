@@ -69,6 +69,11 @@ vk::context::~context() {
 		delete m_surface;
 	}
 	
+	if (m_validation) {
+		
+		delete m_validation;
+	}
+	
 	if (m_instance) {
 		
 		delete m_instance;

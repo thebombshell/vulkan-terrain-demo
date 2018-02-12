@@ -8,6 +8,7 @@
 
 #include "vulkan_swapchain.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_framebuffer.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_image_view.hpp"
 #include "vulkan_physical_device.hpp"
