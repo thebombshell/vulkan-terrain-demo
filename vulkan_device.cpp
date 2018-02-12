@@ -55,13 +55,14 @@ vk::device::device
 	}
 	
 	std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
+	std::vector<float> queue_priorities = {1.0f};
 	VkDeviceQueueCreateInfo graphical_queue_create_info = {};
 	graphical_queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	graphical_queue_create_info.pNext = nullptr;
 	graphical_queue_create_info.flags = 0;
 	graphical_queue_create_info.queueFamilyIndex = m_graphical_queue_family_index;
 	graphical_queue_create_info.queueCount = 1;
-	graphical_queue_create_info.pQueuePriorities = &m_queue_priority;
+	graphical_queue_create_info.pQueuePriorities = queue_priorities.data();
 	queue_create_infos.push_back(graphical_queue_create_info);
 	if (m_graphical_queue_family_index != m_present_queue_family_index) {
 		
@@ -71,7 +72,7 @@ vk::device::device
 		present_queue_create_info.flags = 0;
 		present_queue_create_info.queueFamilyIndex = m_present_queue_family_index;
 		present_queue_create_info.queueCount = 1;
-		present_queue_create_info.pQueuePriorities = &m_queue_priority;
+		present_queue_create_info.pQueuePriorities = queue_priorities.data();
 		queue_create_infos.push_back(present_queue_create_info);
 	}
 	

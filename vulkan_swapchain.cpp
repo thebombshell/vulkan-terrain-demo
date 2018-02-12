@@ -186,6 +186,6 @@ void vk::swapchain::create_swap_images() {
 			, m_device.get_device(), &image_view_info, nullptr, &image_view)
 		
 		m_swap_images.push_back(new vk::image_reference(t_image));
-		m_image_views.push_back(new vk::image_view(m_device, **(m_swap_images.end()--), m_surface_format.format));
+		m_image_views.push_back(new vk::image_view(m_device, **(--m_swap_images.end()), m_surface_format.format));
 	}
 }

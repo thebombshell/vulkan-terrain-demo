@@ -30,7 +30,7 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 	const char* const device_extensions[] = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
-	m_instance = new vk::instance( instance_layers, 1, instance_extensions, 2);
+	m_instance = new vk::instance( instance_layers, 1, instance_extensions, 3);
 	m_validation = new vk::validation(*m_instance);
 	for (auto* t_physical_device : m_instance->get_physical_devices()) {
 		
@@ -39,7 +39,7 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 			&& t_physical_device->are_extensions_supported(device_extensions, 1)) {
 			
 			m_surface = new vk::surface(t_window_handle, t_handle_instance, *m_instance, *t_physical_device);
-			m_device = new vk::device(*t_physical_device, *m_surface, nullptr, 0, nullptr, 0);
+			m_device = new vk::device(*t_physical_device, *m_surface, nullptr, 0, device_extensions, 1);
 			break;
 		}
 	}

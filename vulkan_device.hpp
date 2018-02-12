@@ -46,9 +46,6 @@ namespace vk {
 		int m_present_queue_family_index;
 		VkQueue m_graphical_queue;
 		VkQueue m_present_queue;
-		
-		float m_queue_priority;
-		
 	};
 }
 
