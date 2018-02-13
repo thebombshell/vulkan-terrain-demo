@@ -8,20 +8,28 @@
 
 #include "vulkan_framebuffer.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_image_view.hpp"
+#include "vulkan_render_pass.hpp"
 
 vk::framebuffer::framebuffer
-	( vk::device& t_device, vk::render_pass& t_render_pass
-	, const vk::image_view* t_attachments, uint32_t t_attachment_count
+	( vk::device& t_device, vk::render_pass& t_render_pass, std::vector<vk::image_view>& t_image_views
 	, uint32_t t_width, uint32_t t_height, uint32_t t_layers)
 	: m_device{t_device}, m_render_pass{t_render_pass} { 
 	
+	int i = 0;
+	std::vector<VkImageView> image_views{t_image_views.size()};
+	for (const vk::image_view& t_image_view : t_image_views) {
+		
+		image_views[i] = t_image_view.get_image_view();
+		++i;
+	}
 	VkFramebufferCreateInfo framebuffer_info = {};
 	framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebuffer_info.pNext = nullptr;
 	framebuffer_info.flags = 0;
 	framebuffer_info.renderPass = t_render_pass.get_render_pass();
-	framebuffer_info.attachmentCount = t_attachment_count;
-	framebuffer_info.pAttachments = t_attachments;
+	framebuffer_info.attachmentCount = static_cast<uint32_t>(image_views.size());
+	framebuffer_info.pAttachments = image_views.data();
 	framebuffer_info.width = t_width;
 	framebuffer_info.height = t_height;
 	framebuffer_info.layers = t_layers;
