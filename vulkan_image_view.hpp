@@ -10,10 +10,11 @@
 #define VKCPP_VULKAN_IMAGE_VIEW_HPP
 
 #include "vulkan.hpp"
+#include "vulkan_device.hpp"
 
 namespace vk {
 	
-	class image_view {
+	class image_view : public device_object {
 		
 		public:
 		
@@ -26,7 +27,6 @@ namespace vk {
 		
 		private:
 		
-		vk::device& m_device;
 		vk::i_image& m_image;
 		
 		VkImageView m_image_view;

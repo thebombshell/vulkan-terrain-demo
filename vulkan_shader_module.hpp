@@ -10,24 +10,21 @@
 #define VKCPP_VULKAN_SHADER_MODULE_HPP
 
 #include "vulkan.hpp"
+#include "vulkan_device.hpp"
 
 namespace vk {
 	
-	class shader_module {
+	class shader_module : public device_object {
 		
 		public:
 		
 		shader_module(vk::device& t_device, const char* t_path);
 		~shader_module();
 		
-		vk::device& get_device();
-		const vk::device& get_device() const;
-		
 		VkShaderModule get_shader_module() const;
 		
 		private:
 		
-		vk::device& m_device;
 		VkShaderModule m_shader_module;
 	};
 }

@@ -10,10 +10,11 @@
 #define VKCPP_VULKAN_RENDER_PASS_HPP
 
 #include "vulkan.hpp"
+#include "vulkan_device.hpp"
 
 namespace vk {
 	
-	class render_pass{
+	class render_pass : public device_object {
 	
 	public:
 	
@@ -24,14 +25,9 @@ namespace vk {
 		, const VkSubpassDependency* t_subpass_dependancies = nullptr, uint32_t t_subpass_dependency_count = 0);
 	~render_pass();
 	
-	vk::device& get_device();
-	const vk::device& get_device() const;
-	
 	VkRenderPass get_render_pass();
 	
 	private:
-	
-	vk::device& m_device;
 	
 	VkRenderPass m_render_pass;
 	};

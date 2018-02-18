@@ -10,10 +10,11 @@
 #define VKCPP_VULKAN_PIPELINE_LAYOUT_HPP
 
 #include "vulkan.hpp"
+#include "vulkan_device.hpp"
 
 namespace vk {
 	
-	class pipeline_layout {
+	class pipeline_layout : public device_object {
 		
 		public:
 		
@@ -23,14 +24,9 @@ namespace vk {
 			, const VkPushConstantRange* t_push_constant_ranges = nullptr, uint32_t t_push_constant_range_count = 0);
 		~pipeline_layout();
 		
-		vk::device& get_device();
-		const vk::device& get_device() const;
-		
 		VkPipelineLayout get_pipeline_layout();
 		
 		private:
-		
-		vk::device& m_device;
 		
 		VkPipelineLayout m_pipeline_layout;
 	};

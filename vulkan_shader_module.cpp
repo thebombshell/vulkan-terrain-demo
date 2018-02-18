@@ -11,7 +11,7 @@
 
 #include <fstream>
 
-vk::shader_module::shader_module(vk::device& t_device, const char* t_path) : m_device{t_device} {
+vk::shader_module::shader_module(vk::device& t_device, const char* t_path) : device_object{t_device} {
 	
 	std::ifstream file(t_path, std::ios::binary | std::ios::ate);
 	std::streamsize size = file.tellg();
@@ -37,16 +37,6 @@ vk::shader_module::shader_module(vk::device& t_device, const char* t_path) : m_d
 vk::shader_module::~shader_module() {
 	
 	vkDestroyShaderModule(m_device.get_device(), m_shader_module, nullptr);
-}
-
-vk::device& vk::shader_module::get_device() {
-	
-	return m_device;
-}
-
-const vk::device& vk::shader_module::get_device() const {
-	
-	return m_device;
 }
 
 VkShaderModule vk::shader_module::get_shader_module() const {

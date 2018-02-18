@@ -16,7 +16,7 @@
 
 #include <algorithm>
 
-vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : m_surface{t_surface}, m_device{t_device} {
+vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : device_object{t_device}, m_surface{t_surface} {
 	
 	choose_surface_format();
 	choose_present_mode();
@@ -162,29 +162,6 @@ void vk::swapchain::create_swap_images() {
 		, m_device.get_device(), m_swapchain, &image_count, swap_images.data())
 	
 	for (const VkImage& t_image : swap_images) {
-		
-		VkImageViewCreateInfo image_view_info = {};
-		image_view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		image_view_info.pNext = nullptr;
-		image_view_info.flags = 0;
-		image_view_info.image = t_image;
-		image_view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		image_view_info.format = m_surface_format.format;
-		image_view_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-		image_view_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-		image_view_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-		image_view_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-		image_view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		image_view_info.subresourceRange.baseMipLevel = 0;
-		image_view_info.subresourceRange.levelCount = 1;
-		image_view_info.subresourceRange.baseArrayLayer = 0;
-		image_view_info.subresourceRange.layerCount = 1;
-		
-		VkImageView image_view;
-		VK_DEBUG
-			( vkCreateImageView
-			, "Failed to create swap chain image view"
-			, m_device.get_device(), &image_view_info, nullptr, &image_view)
 		
 		m_swap_images.push_back(new vk::image_reference(t_image));
 		m_image_views.push_back(new vk::image_view(m_device, **(--m_swap_images.end()), m_surface_format.format));

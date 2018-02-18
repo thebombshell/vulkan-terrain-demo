@@ -47,6 +47,21 @@ namespace vk {
 		VkQueue m_graphical_queue;
 		VkQueue m_present_queue;
 	};
+	
+	class device_object {
+		
+		public:
+		
+		device_object(vk::device& t_device);
+		~device_object();
+		
+		vk::device& get_device();
+		const vk::device& get_device() const;
+		
+		protected:
+		
+		vk::device& m_device;
+	};
 }
 
 #endif

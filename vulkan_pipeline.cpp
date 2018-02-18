@@ -15,10 +15,23 @@
 
 #include <fstream>
 
+vk::pipeline::pipeline() {
+	
+}
+
+vk::pipeline::~pipeline() {
+	
+}
+
+VkPipeline vk::pipeline::get_pipeline() {
+	
+	return m_pipeline;
+}
+
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
 vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain)
-	: m_device{t_device}, m_swapchain{t_swapchain}
+	: device_object{t_device}, m_swapchain{t_swapchain}
 	, m_vertex_shader_module{nullptr}, m_fragment_shader_module{nullptr}
 	, m_pipeline_layout{nullptr}, m_render_pass{nullptr} {
 	

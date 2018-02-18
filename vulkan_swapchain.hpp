@@ -5,10 +5,11 @@
 #define VK_TERRAIN_DEMO_VULKAN_SWAPCHAIN_HPP
 
 #include "vulkan.hpp"
+#include "vulkan_device.hpp"
 
 namespace vk {
 	
-	class swapchain {
+	class swapchain : public device_object {
 		
 		public:
 		
@@ -16,7 +17,6 @@ namespace vk {
 		~swapchain();
 		
 		vk::surface& get_surface();
-		vk::device& get_device();
 		
 		VkExtent2D get_extent() const;
 		VkSurfaceFormatKHR get_surface_format() const;
@@ -32,7 +32,6 @@ namespace vk {
 		void create_swap_images();
 		
 		vk::surface& m_surface;
-		vk::device& m_device;
 		
 		VkExtent2D m_extent;
 		VkSurfaceFormatKHR m_surface_format;

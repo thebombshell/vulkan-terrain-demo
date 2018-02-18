@@ -13,7 +13,7 @@ vk::pipeline_layout::pipeline_layout
 	( vk::device& t_device
 	, const VkDescriptorSetLayout* t_set_layouts, uint32_t t_set_layout_count
 	, const VkPushConstantRange* t_push_constant_ranges, uint32_t t_push_constant_range_count
-	) : m_device{t_device} {
+	) : device_object{t_device} {
 	
 	VkPipelineLayoutCreateInfo pipeline_layout_info = {};
 	pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -34,17 +34,6 @@ vk::pipeline_layout::~pipeline_layout() {
 	
 	vkDestroyPipelineLayout(m_device.get_device(), m_pipeline_layout, nullptr);
 }
-
-vk::device& vk::pipeline_layout::get_device() {
-	
-	return m_device;
-}
-
-const vk::device& vk::pipeline_layout::get_device() const {
-	
-	return m_device;
-}
-
 
 VkPipelineLayout vk::pipeline_layout::get_pipeline_layout() {
 	

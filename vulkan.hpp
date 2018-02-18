@@ -95,36 +95,38 @@ namespace vk {
 	
 	// forwarrd decclerations
 	
-	class context;
-	class validation;
-	class instance;
-	class physical_device;
-	class device;
-	class command_pool;
-	class fence;
-	class semaphore;
-	class event;
-	class render_pass;
-	class framebuffer;
-	class graphics_pipeline;
-	class shader_module;
-	class pipeline_cache;
 	class buffer;
 	class buffer_view;
-	class i_image;
-	class image_reference;
-	class image;
-	class descriptor_set_layout;
-	class pipeline_layout;
+	class command_pool;
+	class context;
 	class descriptor_pool;
-	class sampler;
-	class image_view;
-	class query_pool;
-	class surface;
+	class descriptor_set_layout;
+	class device;
+	class device_object;
 	class display_mode;
 	class display_plane_surface;
-	class swapchain;
+	class event;
+	class fence;
+	class framebuffer;
+	class graphics_pipeline;
+	class i_image;
+	class image;
+	class image_reference;
+	class image_view;
+	class instance;
+	class pipeline;
+	class pipeline_cache;
+	class pipeline_layout;
+	class physical_device;
+	class query_pool;
+	class render_pass;
+	class sampler;
+	class semaphore;
+	class shader_module;
 	class shared_swapchain;
+	class surface;
+	class swapchain;
+	class validation;
 }
 
 #endif

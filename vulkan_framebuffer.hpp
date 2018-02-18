@@ -10,18 +10,19 @@
 #define VKCPP_VULKAN_FRAMEBUFFER_HPP
 
 #include "vulkan.hpp"
+#include "vulkan_device.hpp"
 
 namespace vk {
 	
-	class framebuffer {
+	class framebuffer : public device_object {
 		
 		public:
 		
-		framebuffer(vk::device& t_device, vk::render_pass& t_render_pass);
+		framebuffer
+			( vk::device& t_device, vk::render_pass& t_render_pass
+			, std::vector<vk::image_view*>& t_attachments
+			, uint32_t t_width, uint32_t t_height, uint32_t t_layers);
 		~framebuffer();
-		
-		vk::device& get_device();
-		const vk::device& get_device() const;
 		
 		vk::render_pass& get_render_pass();
 		const vk::render_pass& get_render_pass() const;
@@ -30,7 +31,6 @@ namespace vk {
 		
 		private:
 		
-		vk::device& m_device;
 		vk::render_pass& m_render_pass;
 		
 		VkFramebuffer m_framebuffer;

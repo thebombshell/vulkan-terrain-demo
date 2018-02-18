@@ -138,3 +138,21 @@ int vk::device::get_present_queue_family_index() const {
 	
 	return m_present_queue_family_index;
 }
+
+vk::device_object::device_object(vk::device& t_device) : m_device{t_device} {
+	
+}
+
+vk::device_object::~device_object() {
+	
+}
+
+vk::device& vk::device_object::get_device() {
+	
+	return m_device;
+}
+
+const vk::device& vk::device_object::get_device() const {
+	
+	return m_device;
+}
