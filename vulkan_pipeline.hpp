@@ -35,6 +35,9 @@ namespace vk {
 		graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain);
 		~graphics_pipeline();
 		
+		vk::render_pass& get_render_pass();
+		const vk::render_pass& get_render_pass() const;
+		
 		private:
 		
 		void create_pipeline();
@@ -44,8 +47,6 @@ namespace vk {
 		vk::shader_module* m_fragment_shader_module;
 		vk::pipeline_layout* m_pipeline_layout;
 		vk::render_pass* m_render_pass;
-		
-		std::vector<vk::framebuffer*> m_framebuffers;
 	};
 }
 

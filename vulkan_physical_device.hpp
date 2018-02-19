@@ -43,6 +43,15 @@ namespace vk {
 		// returns - true if this physical device is a discrete gpu
 		bool is_discrete_gpu() const;
 		
+		// find_memory_index
+		//
+		// checks for and returns a memory type index matching the required index flag and property flags
+		//
+		// param - t_index - a flag index presumably returned by a memory requirements query
+		// param - t_property_flags - a set of property flags presumably returned by a memorry requirements query
+		// returns - the index of the matching memory type
+		uint32_t find_memory_index(uint32_t t_index, VkMemoryPropertyFlags t_property_flags);
+		
 		// has_feature
 		//
 		// returns - true if this physical device has the related feature
@@ -118,6 +127,7 @@ namespace vk {
 		VkPhysicalDevice m_physical_device;
 		VkPhysicalDeviceProperties m_properties;
 		VkPhysicalDeviceFeatures m_features;
+		VkPhysicalDeviceMemoryProperties m_memory_properties;
 		std::vector<VkQueueFamilyProperties> m_queue_family_properties;
 		std::vector<VkExtensionProperties> m_extension_properties;
 		std::vector<VkSurfaceFormatKHR> m_surface_formats;

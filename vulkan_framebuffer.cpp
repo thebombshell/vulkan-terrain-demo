@@ -14,7 +14,7 @@
 vk::framebuffer::framebuffer
 	( vk::device& t_device, vk::render_pass& t_render_pass
 	, std::vector<vk::image_view*>& t_attachments
-	, uint32_t t_width, uint32_t t_height, uint32_t t_layers)
+	, VkExtent2D t_resolution, uint32_t t_layers)
 	: device_object{t_device}, m_render_pass{t_render_pass} { 
 	
 	std::vector<VkImageView> attachments{t_attachments.size()};
@@ -31,8 +31,8 @@ vk::framebuffer::framebuffer
 	framebuffer_info.renderPass = t_render_pass.get_render_pass();
 	framebuffer_info.attachmentCount = static_cast<uint32_t>(attachments.size());
 	framebuffer_info.pAttachments = attachments.data();
-	framebuffer_info.width = t_width;
-	framebuffer_info.height = t_height;
+	framebuffer_info.width = t_resolution.width;
+	framebuffer_info.height = t_resolution.height;
 	framebuffer_info.layers = t_layers;
 	
 	VK_DEBUG

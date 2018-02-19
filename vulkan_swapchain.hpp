@@ -7,6 +7,8 @@
 #include "vulkan.hpp"
 #include "vulkan_device.hpp"
 
+#include <unordered_map>
+
 namespace vk {
 	
 	class swapchain : public device_object {
@@ -22,6 +24,11 @@ namespace vk {
 		VkSurfaceFormatKHR get_surface_format() const;
 		VkPresentModeKHR get_present_mode() const;
 		VkSwapchainKHR get_swapchain() const;
+		
+		const std::vector<vk::image_reference*>& get_swap_images();
+		const std::vector<vk::image_view*>& get_image_views();
+		
+		uint32_t get_available_image_index(vk::semaphore* t_semaphore = nullptr);
 		
 		private:
 		

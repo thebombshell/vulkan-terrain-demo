@@ -12,6 +12,7 @@
 #include "vulkan_image.hpp"
 #include "vulkan_image_view.hpp"
 #include "vulkan_physical_device.hpp"
+#include "vulkan_semaphore.hpp"
 #include "vulkan_surface.hpp"
 
 #include <algorithm>
@@ -166,4 +167,24 @@ void vk::swapchain::create_swap_images() {
 		m_swap_images.push_back(new vk::image_reference(t_image));
 		m_image_views.push_back(new vk::image_view(m_device, **(--m_swap_images.end()), m_surface_format.format));
 	}
+}
+
+const std::vector<vk::image_reference*>& vk::swapchain::get_swap_images() {
+	
+	return m_swap_images;
+}
+
+const std::vector<vk::image_view*>& vk::swapchain::get_image_views() {
+	
+	return m_image_views;
+}
+
+uint32_t vk::swapchain::get_available_image_index(vk::semaphore* t_semaphore) {
+	
+	uint32_t output;
+	VK_DEBUG
+		( vkAcquireNextImageKHR
+		, "Failed to acquire next image index"
+		, m_device.get_device(), m_swapchain, std::numeric_limits<uint32_t>::max(), (t_semaphore ? t_semaphore->get_semaphore() : VK_NULL_HANDLE), VK_NULL_HANDLE, &output)
+	return output;
 }

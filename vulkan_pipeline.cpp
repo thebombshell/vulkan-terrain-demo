@@ -81,7 +81,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 	vertex_attributes[1].location = 1;
 	vertex_attributes[1].binding = 0;
 	vertex_attributes[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	vertex_attributes[1].offset = 0;
+	vertex_attributes[1].offset = sizeof(float) * 3;
 	vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertex_input_info.pNext = nullptr;
 	vertex_input_info.flags = 0;
@@ -184,8 +184,17 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 	sub_pass.preserveAttachmentCount = 0;
 	sub_pass.pPreserveAttachments = nullptr;
 	
+	VkSubpassDependency subpass_dependancy = {};
+	subpass_dependancy.srcSubpass = VK_SUBPASS_EXTERNAL;
+	subpass_dependancy.dstSubpass = 0;
+	subpass_dependancy.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	subpass_dependancy.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	subpass_dependancy.srcAccessMask = 0;
+	subpass_dependancy.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	subpass_dependancy.dependencyFlags = 0;
+	
 	m_pipeline_layout = new vk::pipeline_layout(m_device, nullptr, 0, nullptr, 0);
-	m_render_pass = new vk::render_pass(m_device, &color_attachment, 1, &sub_pass, 1);
+	m_render_pass = new vk::render_pass(m_device, &color_attachment, 1, &sub_pass, 1, &subpass_dependancy, 1);
 	
 	VkGraphicsPipelineCreateInfo pipeline_info = {};
 	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -235,4 +244,22 @@ vk::graphics_pipeline::~graphics_pipeline() {
 		
 		delete m_fragment_shader_module;
 	}
+}
+
+vk::render_pass& vk::graphics_pipeline::get_render_pass() {
+	
+	if (!m_render_pass) {
+		
+		throw vk::vulkan_exception("render pass has not successfully been created and can not be returned.");
+	}
+	return *m_render_pass;
+}
+
+const vk::render_pass& vk::graphics_pipeline::get_render_pass() const {
+	
+	if (!m_render_pass) {
+		
+		throw vk::vulkan_exception("render pass has not successfully been created and can not be returned.");
+	}
+	return *m_render_pass;
 }

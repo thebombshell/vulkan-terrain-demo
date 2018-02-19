@@ -98,6 +98,7 @@ namespace vk {
 	class buffer;
 	class buffer_view;
 	class command_pool;
+	class command_buffer;
 	class context;
 	class descriptor_pool;
 	class descriptor_set_layout;
@@ -127,6 +128,7 @@ namespace vk {
 	class surface;
 	class swapchain;
 	class validation;
+	class vertex_buffer;
 }
 
 #endif

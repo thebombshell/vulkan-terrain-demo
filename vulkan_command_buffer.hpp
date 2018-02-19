@@ -28,6 +28,10 @@ namespace vk {
 			( vk::render_pass& t_render_pass, vk::framebuffer& t_framebuffer
 			, VkRect2D t_render_area, const VkClearValue* const t_clear_values, uint32_t t_clear_value_count);
 		void bind_pipeline(vk::pipeline& t_pipeline);
+		void bind_buffers(std::vector<vk::buffer*>& t_buffers);
+		void draw(uint32_t t_vertex_count, uint32_t t_instance_count = 1, uint32_t t_vertex_offset = 0, uint32_t t_instance_offset = 0);
+		void end_render_pass();
+		void end();
 		
 		private:
 		

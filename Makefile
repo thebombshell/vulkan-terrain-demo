@@ -34,7 +34,7 @@ frag.spv: basic_shader.frag
 	$(SPIRV) $(SPIRVFLAGS) -V basic_shader.frag
 
 clean:
-	rm *.o vk_terrain_demo -f
+	rm *.o *.spv vk_terrain_demo -f
 
 debug:
 	$(GDB) $(GDBFLAGS) vk_terrain_demo.exe

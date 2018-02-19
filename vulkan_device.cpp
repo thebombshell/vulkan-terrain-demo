@@ -7,6 +7,7 @@
 // copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
 #include "vulkan_device.hpp"
+#include "vulkan_fence.hpp"
 #include "vulkan_physical_device.hpp"
 #include "vulkan_surface.hpp"
 
@@ -137,6 +138,14 @@ int vk::device::get_graphical_queue_family_index() const {
 int vk::device::get_present_queue_family_index() const {
 	
 	return m_present_queue_family_index;
+}
+
+void vk::device::submit_graphical_queue( const VkSubmitInfo* t_submit_infos, uint32_t t_submit_info_count, vk::fence* t_fence) {
+	
+	VK_DEBUG
+		( vkQueueSubmit
+		, "Failed to submit queue"
+		, m_graphical_queue, t_submit_info_count, t_submit_infos, (t_fence ? t_fence->get_fence() : VK_NULL_HANDLE))
 }
 
 vk::device_object::device_object(vk::device& t_device) : m_device{t_device} {

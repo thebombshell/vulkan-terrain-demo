@@ -6,9 +6,11 @@
 // author - Scott R Howell - https://github.com/thebombshell
 // copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
+#include "vulkan_buffer.hpp"
 #include "vulkan_command_buffer.hpp"
 #include "vulkan_command_pool.hpp"
 #include "vulkan_framebuffer.hpp"
+#include "vulkan_pipeline.hpp"
 #include "vulkan_render_pass.hpp"
 
 vk::command_buffer::command_buffer(vk::device& t_device, vk::command_pool& t_command_pool) 
@@ -62,4 +64,40 @@ void vk::command_buffer::begin_render_pass
 	render_pass_begin_info.clearValueCount = t_clear_value_count;
 	render_pass_begin_info.pClearValues = t_clear_values;
 	vkCmdBeginRenderPass(m_command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void vk::command_buffer::bind_pipeline(vk::pipeline& t_pipeline) {
+	
+	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, t_pipeline.get_pipeline());
+}
+
+void vk::command_buffer::bind_buffers(std::vector<vk::buffer*>& t_buffers) {
+	
+	std::vector<VkBuffer> buffers {t_buffers.size()};
+	std::vector<VkDeviceSize> offsets {t_buffers.size()};
+	int i = 0;
+	for (auto* t_buffer : t_buffers) {
+		
+		buffers[i] = t_buffer->get_buffer();
+		offsets[i++] = 0;
+	}
+	vkCmdBindVertexBuffers(m_command_buffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
+}
+
+void vk::command_buffer::draw(uint32_t t_vertex_count, uint32_t t_instance_count, uint32_t t_vertex_offset, uint32_t t_instance_offset) {
+	
+	vkCmdDraw(m_command_buffer, t_vertex_count, t_instance_count, t_vertex_offset, t_instance_offset);
+}
+
+void vk::command_buffer::end_render_pass() {
+	
+	vkCmdEndRenderPass(m_command_buffer);
+}
+
+void vk::command_buffer::end() {
+	
+	VK_DEBUG
+		( vkEndCommandBuffer
+		, "Failed to end command buffer"
+		, m_command_buffer)
 }

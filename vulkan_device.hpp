@@ -36,6 +36,8 @@ namespace vk {
 		float get_queue_priority() const;
 		void set_queue_priority(float t_value);
 		
+		void submit_graphical_queue( const VkSubmitInfo* t_submit_infos, uint32_t t_submit_info_count = 1, vk::fence* t_fence = nullptr);
+		
 		private:
 		
 		vk::physical_device& m_physical_device;

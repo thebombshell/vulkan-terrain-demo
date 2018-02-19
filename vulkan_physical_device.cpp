@@ -19,6 +19,7 @@ vk::physical_device::physical_device(VkPhysicalDevice t_physical_device) : m_phy
 	
 	vkGetPhysicalDeviceProperties(m_physical_device, &m_properties);
 	vkGetPhysicalDeviceFeatures(m_physical_device, &m_features);
+	vkGetPhysicalDeviceMemoryProperties(m_physical_device, &m_memory_properties);
 	
 	uint32_t queue_family_property_count;
 	vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &queue_family_property_count, nullptr);
@@ -75,6 +76,20 @@ VKCPP_FLAG vk::physical_device::are_extensions_supported(const char* const* t_ex
 bool vk::physical_device::is_discrete_gpu() const {
 	
 	return m_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+}
+
+uint32_t vk::physical_device::find_memory_index(uint32_t t_index, VkMemoryPropertyFlags t_property_flags) {
+	
+	for (uint32_t i = 0; i < m_memory_properties.memoryTypeCount; ++i) {
+		
+		if (t_index & (1 << i) && (m_memory_properties.memoryTypes[i].propertyFlags & t_property_flags) == t_property_flags) {
+			
+			return i;
+		}
+	}
+	
+	throw new vk::vulkan_exception("Could not find a supported memory type.");
+	return 0;
 }
 
 bool vk::physical_device::has_robust_buffer_access() const {
