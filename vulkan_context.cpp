@@ -52,9 +52,9 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 	m_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
 	m_vertex_buffer = new vk::vertex_buffer(*m_device, sizeof(float) * 6 * 3);
 	std::vector<float> vertex_data = 
-		{ 1.0f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f
-		, -1.0f, 0.0f, 0.5f, 0.0f, 1.0f, 0.0f
-		, 0.0f, 1.0f, 0.5f, 0.0f, 0.0f, 1.0f};
+		{ 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f
+		, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f
+		, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 	m_vertex_buffer->map(vertex_data.data(), static_cast<uint32_t>(sizeof(float) * vertex_data.size()));
 	std::vector<vk::buffer*> buffers = {m_vertex_buffer};
 	m_command_pool = new vk::command_pool(*m_device, m_device->get_graphical_queue_family_index());
@@ -72,7 +72,7 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 		VkClearValue value = {1.0f, 0.0f, 0.0f, 1.0f};
 		command_buffer->begin_render_pass( m_pipeline->get_render_pass(), *framebuffer, render_area, &value, 1);
 		command_buffer->bind_pipeline(*m_pipeline);
-		command_buffer->bind_buffers(buffers);
+		//command_buffer->bind_buffers(buffers);
 		command_buffer->draw(3, 1, 0, 0);
 		command_buffer->end_render_pass();
 		command_buffer->end();
@@ -142,21 +142,26 @@ void vk::context::render() {
 	
 	uint32_t image_index = m_swapchain->get_available_image_index(m_image_available_semaphore);
 	
-	VkSemaphore wait_semaphores[] = {m_image_available_semaphore->get_semaphore()};
-	VkSemaphore signal_semaphores[] = {m_render_finished_semaphore->get_semaphore()};
-	VkPipelineStageFlags stage_flags[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-	VkCommandBuffer command_buffers[] = {m_command_buffers[image_index]->get_command_buffer()};
+	std::vector<VkSemaphore> wait_semaphores {m_image_available_semaphore->get_semaphore()};
+	std::vector<VkSemaphore> signal_semaphores {m_render_finished_semaphore->get_semaphore()};
+	std::vector<VkPipelineStageFlags> stage_flags {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+	std::vector<VkCommandBuffer> command_buffers {m_command_buffers[image_index]->get_command_buffer()};
 	
 	VkSubmitInfo submit_info = {};
 	submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submit_info.pNext = nullptr;
 	submit_info.waitSemaphoreCount = 1;
-	submit_info.pWaitSemaphores = wait_semaphores;
-	submit_info.pWaitDstStageMask = stage_flags;
+	submit_info.pWaitSemaphores = wait_semaphores.data();
+	submit_info.pWaitDstStageMask = stage_flags.data();
 	submit_info.commandBufferCount = 1;
-	submit_info.pCommandBuffers = command_buffers;
-	submit_info.signalSemaphoreCount = 1;
-	submit_info.pSignalSemaphores = signal_semaphores;
+	submit_info.pCommandBuffers = command_buffers.data();
+	submit_info.signalSemaphoreCount = static_cast<uint32_t>(signal_semaphores.size());
+	submit_info.pSignalSemaphores = signal_semaphores.data();
 	
 	m_device->submit_graphical_queue(&submit_info);
+	
+	std::vector<VkSwapchainKHR> swapchains {m_swapchain->get_swapchain()};
+	std::vector<uint32_t> image_indices;
+	image_indices.push_back(image_index);
+	m_device->queue_pressent(signal_semaphores, swapchains, image_indices);
 }

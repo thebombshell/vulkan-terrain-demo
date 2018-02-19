@@ -39,8 +39,8 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 	m_fragment_shader_module = new vk::shader_module(m_device, "frag.spv");
 	
 	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_info;
-	VkVertexInputBindingDescription vertex_binding;
-	std::vector<VkVertexInputAttributeDescription> vertex_attributes;
+	//VkVertexInputBindingDescription vertex_binding;
+	//std::vector<VkVertexInputAttributeDescription> vertex_attributes;
 	VkPipelineVertexInputStateCreateInfo vertex_input_info;
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_info;
 	VkViewport viewport;
@@ -69,7 +69,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 	shader_stage_info[1].module = m_fragment_shader_module->get_shader_module();
 	shader_stage_info[1].pName = "main";
 	shader_stage_info[1].pSpecializationInfo = nullptr;
-	
+	/*
 	vertex_binding.binding = 0;
 	vertex_binding.stride = sizeof(float) * 6;
 	vertex_binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
@@ -78,17 +78,17 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 	vertex_attributes[0].binding = 0;
 	vertex_attributes[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 	vertex_attributes[0].offset = 0;
-	vertex_attributes[1].location = 1;
-	vertex_attributes[1].binding = 0;
-	vertex_attributes[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	vertex_attributes[1].offset = sizeof(float) * 3;
+	//vertex_attributes[1].location = 1;
+	//vertex_attributes[1].binding = 0;
+	//vertex_attributes[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+	//vertex_attributes[1].offset = sizeof(float) * 3;*/
 	vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertex_input_info.pNext = nullptr;
 	vertex_input_info.flags = 0;
-	vertex_input_info.vertexBindingDescriptionCount = 1;
-	vertex_input_info.pVertexBindingDescriptions = &vertex_binding;
-	vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertex_attributes.size());
-	vertex_input_info.pVertexAttributeDescriptions = vertex_attributes.data();
+	vertex_input_info.vertexBindingDescriptionCount = 0;//1;
+	vertex_input_info.pVertexBindingDescriptions = nullptr;//&vertex_binding;
+	vertex_input_info.vertexAttributeDescriptionCount = 0;// static_cast<uint32_t>(vertex_attributes.size());
+	vertex_input_info.pVertexAttributeDescriptions = nullptr;//vertex_attributes.data();
 	
 	input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	input_assembly_info.pNext = nullptr;

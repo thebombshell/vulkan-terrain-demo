@@ -148,6 +148,24 @@ void vk::device::submit_graphical_queue( const VkSubmitInfo* t_submit_infos, uin
 		, m_graphical_queue, t_submit_info_count, t_submit_infos, (t_fence ? t_fence->get_fence() : VK_NULL_HANDLE))
 }
 
+void vk::device::queue_pressent(std::vector<VkSemaphore>& t_semaphores, std::vector<VkSwapchainKHR>& t_swapchains, std::vector<uint32_t>& t_image_indices) {
+	
+	VkPresentInfoKHR present_info = {};
+	present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	present_info.pNext = nullptr;
+	present_info.waitSemaphoreCount = static_cast<uint32_t>(t_semaphores.size());
+	present_info.pWaitSemaphores = t_semaphores.data();
+	present_info.swapchainCount = static_cast<uint32_t>(t_swapchains.size());
+	present_info.pSwapchains = t_swapchains.data();
+	present_info.pImageIndices = t_image_indices.data();
+	present_info.pResults = nullptr;
+	
+	VK_DEBUG
+		( vkQueuePresentKHR
+		, "Failed to present queue"
+		, m_present_queue, &present_info)
+}
+
 vk::device_object::device_object(vk::device& t_device) : m_device{t_device} {
 	
 }

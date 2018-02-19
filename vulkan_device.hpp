@@ -37,6 +37,7 @@ namespace vk {
 		void set_queue_priority(float t_value);
 		
 		void submit_graphical_queue( const VkSubmitInfo* t_submit_infos, uint32_t t_submit_info_count = 1, vk::fence* t_fence = nullptr);
+		void queue_pressent(std::vector<VkSemaphore>& t_semaphores, std::vector<VkSwapchainKHR>& t_swapchains, std::vector<uint32_t>& t_image_indices);
 		
 		private:
 		

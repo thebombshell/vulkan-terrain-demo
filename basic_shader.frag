@@ -1,10 +1,8 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(location = 0) in vec4 varying_color;
-layout(location = 0) out vec4 output_color;
+layout(location = 0) out vec4 outColor;
 
 void main() {
-	
-	output_color = varying_color;
+    outColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
