@@ -18,10 +18,10 @@ namespace vk {
 		
 		public:
 		
-		buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode) ;
+		buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode);
 		~buffer();
 		
-		VkBuffer get_buffer();
+		virtual VkBuffer get_buffer();
 		
 		void map(const void* t_data_pointer, uint32_t t_data_size);
 		
@@ -29,6 +29,22 @@ namespace vk {
 		
 		VkBuffer m_buffer;
 		VkDeviceMemory m_device_memory;
+	};
+	
+	class staged_buffer : public buffer {
+		
+		public:
+		
+		staged_buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode);
+		~staged_buffer();
+		
+		VkBuffer get_buffer() override;
+		VkBuffer get_staging_buffer();
+		
+		private:
+		
+		VkBuffer m_destination_buffer;
+		VkDeviceMemory m_destination_device_memory;
 	};
 	
 	class vertex_buffer : public buffer {
@@ -41,6 +57,7 @@ namespace vk {
 		private:
 		
 	};
+	
 }
 
 #endif

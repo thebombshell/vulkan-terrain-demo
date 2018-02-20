@@ -71,17 +71,30 @@ void vk::command_buffer::bind_pipeline(vk::pipeline& t_pipeline) {
 	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, t_pipeline.get_pipeline());
 }
 
-void vk::command_buffer::bind_buffers(std::vector<vk::buffer*>& t_buffers) {
+void vk::command_buffer::bind_vertex_buffers(std::vector<vk::buffer*>& t_buffers) {
 	
 	std::vector<VkBuffer> buffers {t_buffers.size()};
 	std::vector<VkDeviceSize> offsets {t_buffers.size()};
-	int i = 0;
-	for (auto* t_buffer : t_buffers) {
+	for (int i = 0; i < t_buffers.size(); i++) {
 		
-		buffers[i] = t_buffer->get_buffer();
-		offsets[i++] = 0;
+		buffers[i] = t_buffers[i]->get_buffer();
+		offsets[i] = 0;
 	}
 	vkCmdBindVertexBuffers(m_command_buffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
+}
+
+void vk::command_buffer::bind_index_buffers(vk::buffer& t_buffer, VkIndexType t_index_type) {
+	
+	vkCmdBindIndexBuffer(m_command_buffer, t_buffer.get_buffer(), 0, t_index_type);
+}
+
+void vk::command_buffer::copy_staged_buffer(vk::staged_buffer& t_buffer) {
+	
+	VkBufferCopy buffer_copy = {};
+	buffer_copy.srcOffset = 0;
+	buffer_copy.dstOffset = 0;
+	buffer_copy.size = size;
+	vkCmdCopyBuffer(m_command_buffer, t_buffer.get_staging_buffer(), t_buffer.get_buffer(), 1, &buffer_copy);
 }
 
 void vk::command_buffer::draw(uint32_t t_vertex_count, uint32_t t_instance_count, uint32_t t_vertex_offset, uint32_t t_instance_offset) {

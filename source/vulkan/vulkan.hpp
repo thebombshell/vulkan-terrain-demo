@@ -125,6 +125,7 @@ namespace vk {
 	class semaphore;
 	class shader_module;
 	class shared_swapchain;
+	class staged_buffer;
 	class surface;
 	class swapchain;
 	class validation;
