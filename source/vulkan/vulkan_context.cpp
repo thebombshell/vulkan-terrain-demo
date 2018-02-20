@@ -52,9 +52,9 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 	m_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
 	m_vertex_buffer = new vk::vertex_buffer(*m_device, sizeof(float) * 6 * 3);
 	std::vector<float> vertex_data = 
-		{ 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f
-		, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f
-		, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+		{ -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f
+		, 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
+		, 0.0f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f};
 	m_vertex_buffer->map(vertex_data.data(), static_cast<uint32_t>(sizeof(float) * vertex_data.size()));
 	std::vector<vk::buffer*> buffers = {m_vertex_buffer};
 	m_command_pool = new vk::command_pool(*m_device, m_device->get_graphical_queue_family_index());
@@ -69,10 +69,10 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 		VkRect2D render_area = {};
 		render_area.offset = {0, 0};
 		render_area.extent = m_swapchain->get_extent();
-		VkClearValue value = {1.0f, 0.0f, 0.0f, 1.0f};
+		VkClearValue value = {0.0f, 0.0f, 0.0f, 1.0f};
 		command_buffer->begin_render_pass( m_pipeline->get_render_pass(), *framebuffer, render_area, &value, 1);
 		command_buffer->bind_pipeline(*m_pipeline);
-		//command_buffer->bind_buffers(buffers);
+		command_buffer->bind_buffers(buffers);
 		command_buffer->draw(3, 1, 0, 0);
 		command_buffer->end_render_pass();
 		command_buffer->end();
@@ -82,6 +82,8 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 }
 
 vk::context::~context() {
+	
+	vkDeviceWaitIdle(m_device->get_device());
 	
 	if (m_render_finished_semaphore) {
 		

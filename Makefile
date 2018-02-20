@@ -1,17 +1,26 @@
 MINGW = C:/Program Files/mingw-w64/x86_64-7.2.0-win32-seh-rt_v5-rev1/mingw64
 VULKAN = C:/VulkanSDK/1.0.65.1
+SOURCE_DIR = source
+SHADER_DIR = shaders
+OBJECT_DIR = objects
+BUILD_DIR = build
 
 CXX = $(MINGW)/bin/g++
 GDB = $(MINGW)/bin/gdb
 SPIRV = $(VULKAN)/bin/glslangValidator
 
 CFLAGS = -g -std=c++11 -static-libgcc -static-libstdc++ -Wall -Werror -Wfatal-errors -DVK_USE_PLATFORM_WIN32_KHR
-GDBFLAGS = 
+GDBFLAGS = -cd $(BUILD_DIR)
 SPIRVFLAGS = 
 
-SOURCE = *.cpp
-OBJS = $(patsubst %.cpp, %.o, $(wildcard $(SOURCE)))
-INC = -I$(VULKAN)/Include
+MAIN_SOURCES := $(wildcard $(SOURCE_DIR)/*.cpp)
+MAIN_OBJECTS := $(patsubst $(SOURCE_DIR)/%.cpp, $(OBJECT_DIR)/%.o, $(MAIN_SOURCES))
+VULKAN_SOURCES := $(wildcard $(SOURCE_DIR)/vulkan/*.cpp)
+VULKAN_OBJECTS := $(patsubst $(SOURCE_DIR)/vulkan/%.cpp, $(OBJECT_DIR)/%.o, $(VULKAN_SOURCES))
+SHADER_SOURCES := $(wildcard $(SHADER_DIR)/*)
+SHADER_OBJECTS := $(patsubst $(SHADER_DIR)/%, $(BUILD_DIR)/%.spv, $(SHADER_SOURCES))
+
+INC = -I$(VULKAN)/Include -Isource -Isource/vulkan
 
 LDDIR = -L$(VULKAN)/Lib
 LDLIBS = -lvulkan-1 -lgdi32
@@ -19,13 +28,23 @@ LDFLAGS = $(LDDIR) $(LDLIBS)
 
 all: vk_terrain_demo shaders
 
-vk_terrain_demo: $(OBJS)
-	$(CXX) $(CFLAGS) $(INC) $(OBJS) -o vk_terrain_demo $(LDFLAGS)
+vk_terrain_demo: main vulkan
+	$(CXX) $(CFLAGS) $(INC) $(MAIN_OBJECTS) $(VULKAN_OBJECTS) -o $(BUILD_DIR)/vk_terrain_demo $(LDFLAGS)
 
-%.o: %.cpp
+main: $(MAIN_OBJECTS)
+
+vulkan: $(VULKAN_OBJECTS)
+
+shaders: $(SHADER_DIRECTORIES) $(SHADER_OBJECTS)
+
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-shaders: vert.spv frag.spv
+$(OBJECT_DIR)/%.o: $(SOURCE_DIR)/vulkan/%.cpp
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(BUILD_DIR)/%.spv: $(SHADER_DIR)/%
+	$(SPIRV) $(SPIRVFLAGS) -V $< -o $@
 
 vert.spv: basic_shader.vert
 	$(SPIRV) $(SPIRVFLAGS) -V basic_shader.vert
@@ -34,7 +53,7 @@ frag.spv: basic_shader.frag
 	$(SPIRV) $(SPIRVFLAGS) -V basic_shader.frag
 
 clean:
-	del *.o *.spv vk_terrain_demo -f
+	rm $(BUILD_DIR)/* $(OBJECT_DIR)/* -f
 
 debug:
 	$(GDB) $(GDBFLAGS) vk_terrain_demo.exe
