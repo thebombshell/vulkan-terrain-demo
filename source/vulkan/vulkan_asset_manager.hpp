@@ -11,7 +11,7 @@
 #define VKCPP_VULKAN_ASSET_MANAGER_HPP
 
 #include "vulkan.hpp"
-
+#include <mutex>
 #include <unordered_map>
 
 namespace vk {
@@ -34,8 +34,57 @@ namespace vk {
 		
 		private:
 		
+		friend class asset_instance;
+		
+		bool lock();
+		void unlock();
+		
 		VKCPP_FLAG m_state;
+		std::mutex m_access_mutex;
 		void* m_pointer;
+	};
+	
+	template<typename T>
+	class asset_instance {
+		
+		public:
+		
+		asset_instance(vk::asset& t_asset) {
+			
+			m_asset = *t_asset;
+		}
+		
+		~asset_instance() {
+			
+			release();
+		}
+		
+		void release() {
+			
+			m_asset->unlock();
+			m_asset = nullptr;
+		}
+		
+		T& operator*() {
+			
+			if (m_asset == nullptr) {
+				
+				throw std::runtime_exception("An asset is being accessed which has already been released.");
+			}
+			return *m_asset;
+		}
+		
+		T* operator->() {
+			
+			if (m_asset == nullptr) {
+				
+				throw std::runtime_exception("An asset is being accessed which has already been released.");
+			}
+			return m_asset;
+		}
+		private:
+		
+		T* m_asset;
 	};
 	
 	class asset_manager {

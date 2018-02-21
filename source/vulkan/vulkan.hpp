@@ -10,6 +10,7 @@
 #define VKCPP_VULKAN_HPP
 
 #include <exception>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <vulkan/vulkan.h>
