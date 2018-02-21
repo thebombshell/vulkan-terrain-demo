@@ -130,9 +130,43 @@ VkBuffer vk::staged_buffer::get_staging_buffer() {
 vk::vertex_buffer::vertex_buffer(vk::device& t_device, uint32_t t_size) 
 	: buffer{t_device, t_size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE} {
 	
+	
 }
 
 vk::vertex_buffer::~vertex_buffer() {
+	
+	
+}
+
+vk::index_buffer::index_buffer(vk::device& t_device, uint32_t t_size) 
+	: buffer{t_device, t_size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE} {
+	
+	
+}
+
+vk::index_buffer::~index_buffer() {
+	
+	
+}
+
+vk::staged_vertex_buffer::staged_vertex_buffer(vk::device& t_device, uint32_t t_size) 
+	: staged_buffer{t_device, t_size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT} {
+	
+	
+}
+
+vk::staged_vertex_buffer::~staged_vertex_buffer() {
+	
+	
+}
+
+vk::staged_index_buffer::staged_index_buffer(vk::device& t_device, uint32_t t_size) 
+	: staged_buffer{t_device, t_size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT} {
+	
+	
+}
+
+vk::staged_index_buffer::~staged_index_buffer() {
 	
 	
 }

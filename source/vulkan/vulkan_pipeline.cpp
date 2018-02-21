@@ -30,15 +30,14 @@ VkPipeline vk::pipeline::get_pipeline() {
 
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
-vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain)
-	: device_object{t_device}, m_swapchain{t_swapchain}
+vk::graphics_pipeline::graphics_pipeline(vk::swapchain& t_swapchain, std::vector<vk::shader_module*> t_shader_modules)
+	: device_object{t_swapchain}, m_swapchain{t_swapchain}
 	, m_vertex_shader_module{nullptr}, m_fragment_shader_module{nullptr}
 	, m_pipeline_layout{nullptr}, m_render_pass{nullptr} {
 	
 	m_vertex_shader_module = new vk::shader_module(m_device, "basic_shader.vert.spv");
 	m_fragment_shader_module = new vk::shader_module(m_device, "basic_shader.frag.spv");
 	
-	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_info;
 	VkVertexInputBindingDescription vertex_binding;
 	std::vector<VkVertexInputAttributeDescription> vertex_attributes;
 	VkPipelineVertexInputStateCreateInfo vertex_input_info;
@@ -54,21 +53,18 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::swapchain& t_
 	VkAttachmentReference color_attachment_reference;
 	VkSubpassDescription sub_pass;
 	
-	shader_stage_info.resize(2);
-	shader_stage_info[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	shader_stage_info[0].pNext = nullptr;
-	shader_stage_info[0].flags = 0;
-	shader_stage_info[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	shader_stage_info[0].module = m_vertex_shader_module->get_shader_module();
-	shader_stage_info[0].pName = "main";
-	shader_stage_info[0].pSpecializationInfo = nullptr;
-	shader_stage_info[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	shader_stage_info[1].pNext = nullptr;
-	shader_stage_info[1].flags = 0;
-	shader_stage_info[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	shader_stage_info[1].module = m_fragment_shader_module->get_shader_module();
-	shader_stage_info[1].pName = "main";
-	shader_stage_info[1].pSpecializationInfo = nullptr;
+	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_info;
+	shader_stage_info.resize(t_shader_modules.size());
+	for (uint32_t i = 0; i < t_shader_modules.size(); ++i) {
+		
+		shader_stage_info[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shader_stage_info[i].pNext = nullptr;
+		shader_stage_info[i].flags = 0;
+		shader_stage_info[i].stage = t_shader_modules[i]->get_shader_stage();
+		shader_stage_info[i].module = t_shader_modules[i]->get_shader_module();
+		shader_stage_info[i].pName = "main";
+		shader_stage_info[i].pSpecializationInfo = nullptr;
+	}
 	
 	vertex_binding.binding = 0;
 	vertex_binding.stride = sizeof(float) * 6;

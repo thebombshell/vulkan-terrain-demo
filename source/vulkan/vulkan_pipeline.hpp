@@ -32,7 +32,7 @@ namespace vk {
 		
 		public:
 		
-		graphics_pipeline(vk::device& t_device, vk::swapchain& t_swapchain);
+		graphics_pipeline(vk::swapchain& t_swapchain, std::vector<vk::shader_module*>& t_shader_modules);
 		~graphics_pipeline();
 		
 		vk::render_pass& get_render_pass();

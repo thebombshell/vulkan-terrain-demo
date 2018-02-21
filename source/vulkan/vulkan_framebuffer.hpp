@@ -19,7 +19,7 @@ namespace vk {
 		public:
 		
 		framebuffer
-			( vk::device& t_device, vk::render_pass& t_render_pass
+			( vk::render_pass& t_render_pass
 			, std::vector<vk::image_view*>& t_attachments
 			, VkExtent2D t_resolution, uint32_t t_layers);
 		~framebuffer();

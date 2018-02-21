@@ -18,13 +18,15 @@ namespace vk {
 		
 		public:
 		
-		shader_module(vk::device& t_device, const char* t_path);
+		shader_module(vk::device& t_device, VkShaderStageFlagBits t_shader_stage, const char* t_path);
 		~shader_module();
 		
-		VkShaderModule get_shader_module() const;
+		VkShaderStageFlagBits get_shader_stage();
+		VkShaderModule get_shader_module();
 		
 		private:
 		
+		VkShaderStageFlagBits m_shader_stage;
 		VkShaderModule m_shader_module;
 	};
 }

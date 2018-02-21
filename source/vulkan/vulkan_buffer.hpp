@@ -19,7 +19,7 @@ namespace vk {
 		public:
 		
 		buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode);
-		~buffer();
+		virtual ~buffer();
 		
 		virtual VkBuffer get_buffer();
 		
@@ -35,8 +35,8 @@ namespace vk {
 		
 		public:
 		
-		staged_buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode);
-		~staged_buffer();
+		staged_buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage);
+		virtual ~staged_buffer();
 		
 		VkBuffer get_buffer() override;
 		VkBuffer get_staging_buffer();
@@ -52,7 +52,40 @@ namespace vk {
 		public:
 		
 		vertex_buffer(vk::device& t_device, uint32_t t_size);
-		~vertex_buffer();
+		virtual ~vertex_buffer();
+		
+		private:
+		
+	};
+	
+	class index_buffer : public buffer {
+		
+		public:
+		
+		index_buffer(vk::device& t_device, uint32_t t_size);
+		virtual ~index_buffer();
+		
+		private:
+		
+	};
+	
+	class staged_vertex_buffer : public staged_buffer {
+		
+		public:
+		
+		staged_vertex_buffer(vk::device& t_device, uint32_t t_size);
+		virtual ~staged_vertex_buffer();
+		
+		private:
+		
+	};
+	
+	class staged_index_buffer : public staged_buffer {
+		
+		public:
+		
+		staged_index_buffer(vk::device& t_device, uint32_t t_size);
+		virtual ~staged_index_buffer();
 		
 		private:
 		

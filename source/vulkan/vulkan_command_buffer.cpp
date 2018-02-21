@@ -13,8 +13,8 @@
 #include "vulkan_pipeline.hpp"
 #include "vulkan_render_pass.hpp"
 
-vk::command_buffer::command_buffer(vk::device& t_device, vk::command_pool& t_command_pool) 
-	: device_object{t_device}, m_command_pool{t_command_pool} {
+vk::command_buffer::command_buffer(vk::command_pool& t_command_pool) 
+	: device_object{t_command_pool}, m_command_pool{t_command_pool} {
 	
 	VkCommandBufferAllocateInfo command_buffer_info = {};
 	command_buffer_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -75,7 +75,7 @@ void vk::command_buffer::bind_vertex_buffers(std::vector<vk::buffer*>& t_buffers
 	
 	std::vector<VkBuffer> buffers {t_buffers.size()};
 	std::vector<VkDeviceSize> offsets {t_buffers.size()};
-	for (int i = 0; i < t_buffers.size(); i++) {
+	for (uint32_t i = 0; i < t_buffers.size(); i++) {
 		
 		buffers[i] = t_buffers[i]->get_buffer();
 		offsets[i] = 0;
@@ -83,17 +83,17 @@ void vk::command_buffer::bind_vertex_buffers(std::vector<vk::buffer*>& t_buffers
 	vkCmdBindVertexBuffers(m_command_buffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
 }
 
-void vk::command_buffer::bind_index_buffers(vk::buffer& t_buffer, VkIndexType t_index_type) {
+void vk::command_buffer::bind_index_buffer(vk::buffer& t_buffer, VkIndexType t_index_type) {
 	
 	vkCmdBindIndexBuffer(m_command_buffer, t_buffer.get_buffer(), 0, t_index_type);
 }
 
-void vk::command_buffer::copy_staged_buffer(vk::staged_buffer& t_buffer) {
+void vk::command_buffer::copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size) {
 	
 	VkBufferCopy buffer_copy = {};
 	buffer_copy.srcOffset = 0;
 	buffer_copy.dstOffset = 0;
-	buffer_copy.size = size;
+	buffer_copy.size = t_size;
 	vkCmdCopyBuffer(m_command_buffer, t_buffer.get_staging_buffer(), t_buffer.get_buffer(), 1, &buffer_copy);
 }
 

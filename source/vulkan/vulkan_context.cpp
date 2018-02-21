@@ -49,7 +49,7 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 		}
 	}
 	m_swapchain = new vk::swapchain(*m_surface, *m_device);
-	m_pipeline = new vk::graphics_pipeline(*m_device, *m_swapchain);
+	m_pipeline = new vk::graphics_pipeline(*m_swapchain);
 	m_vertex_buffer = new vk::vertex_buffer(*m_device, sizeof(float) * 6 * 3);
 	std::vector<float> vertex_data = 
 		{ -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f
@@ -72,7 +72,7 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 		VkClearValue value = {0.0f, 0.0f, 0.0f, 1.0f};
 		command_buffer->begin_render_pass( m_pipeline->get_render_pass(), *framebuffer, render_area, &value, 1);
 		command_buffer->bind_pipeline(*m_pipeline);
-		command_buffer->bind_buffers(buffers);
+		command_buffer->bind_vertex_buffers(buffers);
 		command_buffer->draw(3, 1, 0, 0);
 		command_buffer->end_render_pass();
 		command_buffer->end();

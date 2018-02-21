@@ -170,6 +170,10 @@ vk::device_object::device_object(vk::device& t_device) : m_device{t_device} {
 	
 }
 
+vk::device_object::device_object(vk::device_object& t_device_object) : m_device{t_device_object.m_device} {
+	
+}
+
 vk::device_object::~device_object() {
 	
 }

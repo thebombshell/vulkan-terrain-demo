@@ -56,6 +56,7 @@ namespace vk {
 		public:
 		
 		device_object(vk::device& t_device);
+		device_object(vk::device_object& t_device_object);
 		~device_object();
 		
 		vk::device& get_device();

@@ -95,6 +95,8 @@ namespace vk {
 	
 	// forwarrd decclerations
 	
+	class asset;
+	class asset_manager;
 	class buffer;
 	class buffer_view;
 	class command_pool;

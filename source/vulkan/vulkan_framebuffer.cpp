@@ -12,10 +12,10 @@
 #include "vulkan_render_pass.hpp"
 
 vk::framebuffer::framebuffer
-	( vk::device& t_device, vk::render_pass& t_render_pass
+	( vk::render_pass& t_render_pass
 	, std::vector<vk::image_view*>& t_attachments
 	, VkExtent2D t_resolution, uint32_t t_layers)
-	: device_object{t_device}, m_render_pass{t_render_pass} { 
+	: device_object{t_render_pass}, m_render_pass{t_render_pass} { 
 	
 	std::vector<VkImageView> attachments{t_attachments.size()};
 	int i = 0;
