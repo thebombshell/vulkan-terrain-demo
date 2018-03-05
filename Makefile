@@ -1,5 +1,5 @@
 MINGW = C:/Program Files/mingw-w64/x86_64-7.2.0-win32-seh-rt_v5-rev1/mingw64
-VULKAN = C:/VulkanSDK/1.0.65.1
+VULKAN = C:/VulkanSDK/1.0.68.0
 SOURCE_DIR = source
 SHADER_DIR = shaders
 OBJECT_DIR = objects
@@ -52,8 +52,13 @@ vert.spv: basic_shader.vert
 frag.spv: basic_shader.frag
 	$(SPIRV) $(SPIRVFLAGS) -V basic_shader.frag
 
-clean:
-	rm $(BUILD_DIR)/* $(OBJECT_DIR)/* -f
+clean: rm del
+
+rm:
+	-rm $(BUILD_DIR)/* $(OBJECT_DIR)/* -f
+
+del:
+	-del $(BUILD_DIR)\\* $(OBJECT_DIR)\\* /F /Q
 
 debug:
 	$(GDB) $(GDBFLAGS) vk_terrain_demo.exe

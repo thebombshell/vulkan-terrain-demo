@@ -20,7 +20,6 @@ void render_loop() {
 		vulkan = new vk::context{app_window->get_handle(), GetModuleHandle(0)};
 		while (is_running) {
 			
-			vulkan->render();
 		}
 		delete vulkan;
 	}

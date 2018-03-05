@@ -13,33 +13,27 @@
 #include "vulkan_shader_module.hpp"
 #include "vulkan_swapchain.hpp"
 
-//#include <fstream>
-
-vk::pipeline::pipeline() {
+vk::i_pipeline::i_pipeline() {
 	
 }
 
-vk::pipeline::~pipeline() {
+vk::i_pipeline::~i_pipeline() {
 	
 }
 
-VkPipeline vk::pipeline::get_pipeline() {
+VkPipeline vk::i_pipeline::get_pipeline() {
 	
 	return m_pipeline;
 }
 
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
-vk::graphics_pipeline::graphics_pipeline(vk::swapchain& t_swapchain, std::vector<vk::shader_module*> t_shader_modules)
-	: device_object{t_swapchain}, m_swapchain{t_swapchain}
-	, m_vertex_shader_module{nullptr}, m_fragment_shader_module{nullptr}
+vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_extent, VkFormat t_format
+	, const std::vector<vk::shader_module*>& t_shader_modules
+	, const vk::vertex_definition& t_definition)
+	: device_object{t_device}, m_shader_modules{t_shader_modules.begin(), t_shader_modules.end()}
 	, m_pipeline_layout{nullptr}, m_render_pass{nullptr} {
 	
-	m_vertex_shader_module = new vk::shader_module(m_device, "basic_shader.vert.spv");
-	m_fragment_shader_module = new vk::shader_module(m_device, "basic_shader.frag.spv");
-	
-	VkVertexInputBindingDescription vertex_binding;
-	std::vector<VkVertexInputAttributeDescription> vertex_attributes;
 	VkPipelineVertexInputStateCreateInfo vertex_input_info;
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_info;
 	VkViewport viewport;
@@ -66,25 +60,35 @@ vk::graphics_pipeline::graphics_pipeline(vk::swapchain& t_swapchain, std::vector
 		shader_stage_info[i].pSpecializationInfo = nullptr;
 	}
 	
-	vertex_binding.binding = 0;
-	vertex_binding.stride = sizeof(float) * 6;
-	vertex_binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-	vertex_attributes.resize(2);
-	vertex_attributes[0].location = 0;
-	vertex_attributes[0].binding = 0;
-	vertex_attributes[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-	vertex_attributes[0].offset = 0;
-	vertex_attributes[1].location = 1;
-	vertex_attributes[1].binding = 0;
-	vertex_attributes[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	vertex_attributes[1].offset = sizeof(float) * 3;
+	std::vector<VkVertexInputBindingDescription> input_bindings;
+	std::vector<VkVertexInputAttributeDescription> input_attributes;
+	for (uint32_t i = 0; i < t_definition.bindings.size(); ++i) {
+		
+		const vk::vertex_binding& binding{t_definition.bindings[i]};
+		VkVertexInputBindingDescription input_binding{};
+		input_binding.binding = i;
+		input_binding.stride = binding.stride;
+		input_binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		input_bindings.push_back(input_binding);
+		for (uint32_t j = 0; j < binding.attributes.size(); ++j) {
+			
+			const vk::vertex_attribute& attribute{binding.attributes[j]};
+			
+			VkVertexInputAttributeDescription input_attribute{};
+			input_attribute.location = i + j;
+			input_attribute.binding = i;
+			input_attribute.format = attribute.format;
+			input_attribute.offset = attribute.offset;
+			input_attributes.push_back(input_attribute);
+		}
+	}
 	vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertex_input_info.pNext = nullptr;
 	vertex_input_info.flags = 0;
-	vertex_input_info.vertexBindingDescriptionCount = 1;
-	vertex_input_info.pVertexBindingDescriptions = &vertex_binding;
-	vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertex_attributes.size());
-	vertex_input_info.pVertexAttributeDescriptions = vertex_attributes.data();
+	vertex_input_info.vertexBindingDescriptionCount = static_cast<uint32_t>(input_bindings.size());
+	vertex_input_info.pVertexBindingDescriptions = input_bindings.data();
+	vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(input_attributes.size());
+	vertex_input_info.pVertexAttributeDescriptions = input_attributes.data();
 	
 	input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	input_assembly_info.pNext = nullptr;
@@ -92,7 +96,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::swapchain& t_swapchain, std::vector
 	input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 	input_assembly_info.primitiveRestartEnable = VK_FALSE;
 	
-	VkExtent2D extent = m_swapchain.get_extent();
+	VkExtent2D extent = t_extent;
 	viewport.x = 0;
 	viewport.y = 0;
 	viewport.width = static_cast<float>(extent.width);
@@ -157,7 +161,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::swapchain& t_swapchain, std::vector
 	color_blend_info.blendConstants[3] = 0.0f;
 	
 	color_attachment.flags = 0;
-	color_attachment.format = m_swapchain.get_surface_format().format;
+	color_attachment.format = t_format;
 	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -231,14 +235,6 @@ vk::graphics_pipeline::~graphics_pipeline() {
 	if (m_render_pass) {
 		
 		delete m_render_pass;
-	}
-	if (m_vertex_shader_module) {
-		
-		delete m_vertex_shader_module;
-	}
-	if (m_fragment_shader_module) {
-		
-		delete m_fragment_shader_module;
 	}
 }
 

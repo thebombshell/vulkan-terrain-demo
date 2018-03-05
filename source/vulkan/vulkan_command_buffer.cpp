@@ -66,7 +66,7 @@ void vk::command_buffer::begin_render_pass
 	vkCmdBeginRenderPass(m_command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void vk::command_buffer::bind_pipeline(vk::pipeline& t_pipeline) {
+void vk::command_buffer::bind_pipeline(vk::i_pipeline& t_pipeline) {
 	
 	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, t_pipeline.get_pipeline());
 }

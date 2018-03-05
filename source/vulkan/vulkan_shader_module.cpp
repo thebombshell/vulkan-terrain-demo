@@ -40,7 +40,12 @@ vk::shader_module::~shader_module() {
 	vkDestroyShaderModule(m_device.get_device(), m_shader_module, nullptr);
 }
 
-VkShaderModule vk::shader_module::get_shader_module() const {
+VkShaderStageFlagBits vk::shader_module::get_shader_stage() {
+	
+	return m_shader_stage;
+}
+
+VkShaderModule vk::shader_module::get_shader_module() {
 	
 	return m_shader_module;
 }

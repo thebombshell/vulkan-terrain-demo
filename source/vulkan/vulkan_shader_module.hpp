@@ -11,6 +11,7 @@
 
 #include "vulkan.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_asset_manager.hpp"
 
 namespace vk {
 	

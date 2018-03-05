@@ -87,16 +87,10 @@ namespace vk {
 	// given a function name (func), a const char error string (msg) and finally the functions arguments (...), checks for 
 	// vulkan error results, if unsuccessful throws a vk::vulkan_exception with the message and the error result.
 	
-	#define VK_DEBUG(func, msg, ...) {\
-		VkResult vk_result_;\
-		if ((vk_result_ = func( __VA_ARGS__ ))) {\
-		throw vk::vulkan_exception(msg, vk_result_);\
-		}\
-		}
+	#define VK_DEBUG(func, msg, ...) { VkResult vk_result_; if ((vk_result_ = func( __VA_ARGS__ ))) { throw vk::vulkan_exception(msg, vk_result_); } }
 	
-	// forwarrd decclerations
+	// forward declarations
 	
-	class asset;
 	class asset_manager;
 	class buffer;
 	class buffer_view;
@@ -111,20 +105,24 @@ namespace vk {
 	class display_plane_surface;
 	class event;
 	class fence;
+	class forward_renderer;
 	class framebuffer;
 	class graphics_pipeline;
+	class i_asset;
 	class i_image;
+	class i_locked_asset;
+	class i_pipeline;
+	class instance;
 	class image;
 	class image_reference;
 	class image_view;
 	class instance;
-	class pipeline;
-	class pipeline_cache;
 	class pipeline_layout;
 	class physical_device;
 	class query_pool;
 	class render_pass;
 	class sampler;
+	class scene;
 	class semaphore;
 	class shader_module;
 	class shared_swapchain;

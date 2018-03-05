@@ -27,7 +27,7 @@ namespace vk {
 		void begin_render_pass
 			( vk::render_pass& t_render_pass, vk::framebuffer& t_framebuffer
 			, VkRect2D t_render_area, const VkClearValue* const t_clear_values, uint32_t t_clear_value_count);
-		void bind_pipeline(vk::pipeline& t_pipeline);
+		void bind_pipeline(vk::i_pipeline& t_pipeline);
 		void bind_vertex_buffers(std::vector<vk::buffer*>& t_buffers);
 		void bind_index_buffer(vk::buffer& t_buffer, VkIndexType t_index_type);
 		void copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size);

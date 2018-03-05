@@ -11,28 +11,31 @@
 
 #include "vulkan.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_mesh.hpp"
 
 namespace vk {
 	
-	class pipeline {
+	class i_pipeline {
 		
 		public:
 		
-		pipeline();
-		virtual ~pipeline() = 0;
+		virtual ~i_pipeline() = 0;
 		
 		VkPipeline get_pipeline();
 		
 		protected:
 		
+		i_pipeline();
 		VkPipeline m_pipeline;
 	};
 	
-	class graphics_pipeline : public device_object, public pipeline {
+	class graphics_pipeline : public device_object, public i_pipeline {
 		
 		public:
 		
-		graphics_pipeline(vk::swapchain& t_swapchain, std::vector<vk::shader_module*>& t_shader_modules);
+		graphics_pipeline(vk::device& t_device, VkExtent2D t_extent, VkFormat t_format
+			, const std::vector<vk::shader_module*>& t_shader_modules
+			, const vk::vertex_definition& t_definition);
 		~graphics_pipeline();
 		
 		vk::render_pass& get_render_pass();
@@ -42,9 +45,7 @@ namespace vk {
 		
 		void create_pipeline();
 		
-		vk::swapchain& m_swapchain;
-		vk::shader_module* m_vertex_shader_module;
-		vk::shader_module* m_fragment_shader_module;
+		std::vector<vk::shader_module*> m_shader_modules;
 		vk::pipeline_layout* m_pipeline_layout;
 		vk::render_pass* m_render_pass;
 	};

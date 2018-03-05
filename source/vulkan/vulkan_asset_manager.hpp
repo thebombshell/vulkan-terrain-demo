@@ -11,80 +11,88 @@
 #define VKCPP_VULKAN_ASSET_MANAGER_HPP
 
 #include "vulkan.hpp"
-#include <mutex>
+#include <mingw.mutex.h>
 #include <unordered_map>
 
 namespace vk {
 	
-	const VKCPP_FLAG VKCPP_ASSET_DOES_NOT_EXIST{0};
-	const VKCPP_FLAG VKCPP_ASSET_IS_USABLE{1};
-	const VKCPP_FLAG VKCPP_ASSET_IS_UNUSABLE{2};
-	
-	class asset {
+	class i_locked_asset {
 		
 		public:
 		
-		template<typename T>
-		asset() {
-			
-		}
-		~asset();
+		i_locked_asset(i_locked_asset&&) = default;
+		i_locked_asset(const i_locked_asset&) = delete;
+		i_locked_asset& operator= (const i_locked_asset&) = delete;
 		
-		VKCPP_FLAG get_state();
+		virtual ~i_locked_asset();
+		
+		protected:
+		
+		i_locked_asset(std::mutex& t_mutex);
 		
 		private:
 		
-		friend class asset_instance;
+		std::mutex& m_mutex;
+	};
+	
+	class i_asset {
 		
-		bool lock();
-		void unlock();
+		public:
 		
-		VKCPP_FLAG m_state;
-		std::mutex m_access_mutex;
-		void* m_pointer;
+		virtual ~i_asset();
+		virtual vk::i_locked_asset get_locked_asset() = 0;
+		
+		protected:
+		
+		i_asset();
+		
+		private:
+		
 	};
 	
 	template<typename T>
-	class asset_instance {
+	class asset : public i_asset {
 		
 		public:
 		
-		asset_instance(vk::asset& t_asset) {
+		class locked_asset : public vk::i_locked_asset {
 			
-			m_asset = *t_asset;
-		}
-		
-		~asset_instance() {
+			public:
 			
-			release();
-		}
-		
-		void release() {
-			
-			m_asset->unlock();
-			m_asset = nullptr;
-		}
-		
-		T& operator*() {
-			
-			if (m_asset == nullptr) {
+			locked_asset(std::mutex& t_access_lock, T& t_asset) : i_locked_asset{t_access_lock}, m_asset{t_asset} {
 				
-				throw std::runtime_exception("An asset is being accessed which has already been released.");
 			}
-			return *m_asset;
+			
+			locked_asset(const locked_asset&) = delete;
+			locked_asset& operator= (const locked_asset&) = delete;
+			
+			~locked_asset() {
+				
+			}
+			
+			private:
+			
+			T& m_asset;
+		};
+		
+		template<typename... T_ARGS>
+		asset(T_ARGS... t_args) : m_asset{t_args...} {
+		
 		}
 		
-		T* operator->() {
-			
-			if (m_asset == nullptr) {
-				
-				throw std::runtime_exception("An asset is being accessed which has already been released.");
-			}
-			return m_asset;
+		virtual ~asset() {
+		
 		}
+		
+		vk::i_locked_asset get_locked_asset() {
+			
+			return locked_asset(m_access_lock, m_asset);
+		}
+		
 		private:
 		
-		T* m_asset;
+		std::mutex m_access_lock;
+		T m_asset;
 	};
 	
 	class asset_manager {
@@ -94,14 +102,15 @@ namespace vk {
 		asset_manager(vk::context& t_context);
 		~asset_manager();
 		
-		void add_asset(std::string t_name);
-		void remove_asset(std::string t_name);
-		VKCPP_FLAG get_asset_state();
-		void get_asset();
+		void create_shader(const std::string& t_name, VkShaderStageFlagBits t_shader_stage, const char* t_path);
+		void create_pipeline(const std::string& t_name, std::vector<std::string> t_shader_names);
+		void remove_asset(const std::string& t_name);
+		vk::i_locked_asset get_asset(const std::string& t_name);
 		
 		private:
 		
 		vk::context& m_context;
+		std::unordered_map<std::string, i_asset*> m_assets;
 	};
 }
 

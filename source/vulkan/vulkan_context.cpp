@@ -24,7 +24,7 @@
 #include <iostream>
 
 vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
-	: m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr}, m_pipeline{nullptr}, m_command_pool{nullptr} {
+	: m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr} {
 	
 	const char* const instance_layers[] = {
 		"VK_LAYER_LUNARG_standard_validation"
@@ -49,71 +49,16 @@ vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 		}
 	}
 	m_swapchain = new vk::swapchain(*m_surface, *m_device);
-	m_pipeline = new vk::graphics_pipeline(*m_swapchain);
-	m_vertex_buffer = new vk::vertex_buffer(*m_device, sizeof(float) * 6 * 3);
-	std::vector<float> vertex_data = 
-		{ -0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f
-		, 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f
-		, 0.0f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f};
-	m_vertex_buffer->map(vertex_data.data(), static_cast<uint32_t>(sizeof(float) * vertex_data.size()));
-	std::vector<vk::buffer*> buffers = {m_vertex_buffer};
-	m_command_pool = new vk::command_pool(*m_device, m_device->get_graphical_queue_family_index());
-	for (auto* t_image_view : m_swapchain->get_image_views()) {
-		
-		std::vector<vk::image_view*> image_views = {t_image_view};
-		vk::framebuffer* framebuffer = new vk::framebuffer(*m_device, m_pipeline->get_render_pass(), image_views, m_swapchain->get_extent(), 1);
-		m_framebuffers.push_back( framebuffer );
-		vk::command_buffer* command_buffer = new vk::command_buffer(*m_device, *m_command_pool);
-		m_command_buffers.push_back( command_buffer );
-		command_buffer->begin();
-		VkRect2D render_area = {};
-		render_area.offset = {0, 0};
-		render_area.extent = m_swapchain->get_extent();
-		VkClearValue value = {0.0f, 0.0f, 0.0f, 1.0f};
-		command_buffer->begin_render_pass( m_pipeline->get_render_pass(), *framebuffer, render_area, &value, 1);
-		command_buffer->bind_pipeline(*m_pipeline);
-		command_buffer->bind_vertex_buffers(buffers);
-		command_buffer->draw(3, 1, 0, 0);
-		command_buffer->end_render_pass();
-		command_buffer->end();
-	}
-	m_image_available_semaphore = new vk::semaphore(*m_device);
-	m_render_finished_semaphore = new vk::semaphore(*m_device);
 }
 
 vk::context::~context() {
 	
 	vkDeviceWaitIdle(m_device->get_device());
 	
-	if (m_render_finished_semaphore) {
-		
-		delete m_render_finished_semaphore;
-	}
-	if (m_image_available_semaphore) {
-		
-		delete m_image_available_semaphore;
-	}
-	for (auto* t_command_buffer : m_command_buffers) {
-		
-		delete t_command_buffer;
-	}
-	if (m_command_pool) {
-		
-		delete m_command_pool;
-	}
 	for (auto* t_framebuffer : m_framebuffers) {
 		
 		delete t_framebuffer;
 	}
-	if (m_vertex_buffer) {
-		
-		delete m_vertex_buffer;
-	}
-	if (m_pipeline) {
-		
-		delete m_pipeline;
-	}
-	
 	if (m_swapchain) {
 		
 		delete m_swapchain;
@@ -140,30 +85,24 @@ vk::context::~context() {
 	}
 }
 
-void vk::context::render() {
+
+vk::device& vk::context::get_device() {
 	
-	uint32_t image_index = m_swapchain->get_available_image_index(m_image_available_semaphore);
-	
-	std::vector<VkSemaphore> wait_semaphores {m_image_available_semaphore->get_semaphore()};
-	std::vector<VkSemaphore> signal_semaphores {m_render_finished_semaphore->get_semaphore()};
-	std::vector<VkPipelineStageFlags> stage_flags {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-	std::vector<VkCommandBuffer> command_buffers {m_command_buffers[image_index]->get_command_buffer()};
-	
-	VkSubmitInfo submit_info = {};
-	submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submit_info.pNext = nullptr;
-	submit_info.waitSemaphoreCount = 1;
-	submit_info.pWaitSemaphores = wait_semaphores.data();
-	submit_info.pWaitDstStageMask = stage_flags.data();
-	submit_info.commandBufferCount = 1;
-	submit_info.pCommandBuffers = command_buffers.data();
-	submit_info.signalSemaphoreCount = static_cast<uint32_t>(signal_semaphores.size());
-	submit_info.pSignalSemaphores = signal_semaphores.data();
-	
-	m_device->submit_graphical_queue(&submit_info);
-	
-	std::vector<VkSwapchainKHR> swapchains {m_swapchain->get_swapchain()};
-	std::vector<uint32_t> image_indices;
-	image_indices.push_back(image_index);
-	m_device->queue_pressent(signal_semaphores, swapchains, image_indices);
+	return *m_device;
 }
+
+const vk::device& vk::context::get_device() const {
+	
+	return *m_device;
+}
+
+vk::swapchain& vk::context::get_swapchain() {
+	
+	return *m_swapchain;
+}
+
+const vk::swapchain& vk::context::get_swapchain() const {
+	
+	return *m_swapchain;
+}
+

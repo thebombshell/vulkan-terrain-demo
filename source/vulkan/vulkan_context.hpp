@@ -23,7 +23,11 @@ namespace vk {
 		context(HWND t_window_handle, HINSTANCE t_instance_handle);
 		~context();
 		
-		void render();
+		vk::device& get_device();
+		const vk::device& get_device() const;
+		
+		vk::swapchain& get_swapchain();
+		const vk::swapchain& get_swapchain() const;
 		
 		private:
 		
@@ -32,13 +36,7 @@ namespace vk {
 		vk::surface* m_surface;
 		vk::device* m_device;
 		vk::swapchain* m_swapchain;
-		vk::graphics_pipeline* m_pipeline;
 		std::vector<vk::framebuffer*> m_framebuffers;
-		vk::vertex_buffer* m_vertex_buffer;
-		vk::command_pool* m_command_pool;
-		std::vector<vk::command_buffer*> m_command_buffers;
-		vk::semaphore* m_image_available_semaphore;
-		vk::semaphore* m_render_finished_semaphore;
 	};
 }
 
