@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class semaphore : public device_object {
+	class semaphore : public i_device_object {
 		
 		public:
 		

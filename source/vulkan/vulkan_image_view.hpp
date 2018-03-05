@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class image_view : public device_object {
+	class image_view : public i_device_object {
 		
 		public:
 		

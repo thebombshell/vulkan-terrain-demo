@@ -15,7 +15,7 @@ vk::framebuffer::framebuffer
 	( vk::render_pass& t_render_pass
 	, std::vector<vk::image_view*>& t_attachments
 	, VkExtent2D t_resolution, uint32_t t_layers)
-	: device_object{t_render_pass}, m_render_pass{t_render_pass} { 
+	: i_device_object{t_render_pass}, m_render_pass{t_render_pass} { 
 	
 	std::vector<VkImageView> attachments{t_attachments.size()};
 	int i = 0;

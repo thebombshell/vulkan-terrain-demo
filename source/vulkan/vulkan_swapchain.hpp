@@ -11,7 +11,7 @@
 
 namespace vk {
 	
-	class swapchain : public device_object {
+	class swapchain : public i_device_object {
 		
 		public:
 		

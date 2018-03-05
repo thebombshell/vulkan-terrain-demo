@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class framebuffer : public device_object {
+	class framebuffer : public i_device_object {
 		
 		public:
 		

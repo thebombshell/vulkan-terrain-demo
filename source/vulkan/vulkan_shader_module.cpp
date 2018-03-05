@@ -12,7 +12,7 @@
 #include <fstream>
 
 vk::shader_module::shader_module(vk::device& t_device, VkShaderStageFlagBits t_shader_stage, const char* t_path) 
-	: device_object{t_device}, m_shader_stage{t_shader_stage} {
+	: i_device_object{t_device}, m_shader_stage{t_shader_stage} {
 	
 	std::ifstream file(t_path, std::ios::binary | std::ios::ate);
 	std::streamsize size = file.tellg();

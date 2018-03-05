@@ -17,7 +17,7 @@
 
 #include <algorithm>
 
-vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : device_object{t_device}, m_surface{t_surface} {
+vk::swapchain::swapchain(vk::surface& t_surface, vk::device& t_device) : i_device_object{t_device}, m_surface{t_surface} {
 	
 	choose_surface_format();
 	choose_present_mode();

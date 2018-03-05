@@ -15,7 +15,7 @@
 
 namespace vk {
 	
-	class shader_module : public device_object {
+	class shader_module : public i_device_object {
 		
 		public:
 		

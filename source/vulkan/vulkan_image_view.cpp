@@ -10,7 +10,7 @@
 #include "vulkan_image.hpp"
 
 vk::image_view::image_view(vk::device& t_device, vk::i_image& t_image, VkFormat t_format)
-	: device_object{t_device}, m_image{t_image} {
+	: i_device_object{t_device}, m_image{t_image} {
 	
 	VkImageViewCreateInfo image_view_info = {};
 	image_view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class fence : public device_object {
+	class fence : public i_device_object {
 		
 		public:
 		

@@ -100,7 +100,7 @@ namespace vk {
 	class descriptor_pool;
 	class descriptor_set_layout;
 	class device;
-	class device_object;
+	class i_device_object;
 	class display_mode;
 	class display_plane_surface;
 	class event;
@@ -113,6 +113,7 @@ namespace vk {
 	class i_locked_asset;
 	class i_pipeline;
 	class instance;
+	class index_buffer;
 	class image;
 	class image_reference;
 	class image_view;
@@ -127,6 +128,8 @@ namespace vk {
 	class shader_module;
 	class shared_swapchain;
 	class staged_buffer;
+	class staged_index_buffer;
+	class staged_vertex_buffer;
 	class surface;
 	class swapchain;
 	class validation;

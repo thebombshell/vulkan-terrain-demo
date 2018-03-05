@@ -51,19 +51,19 @@ namespace vk {
 		VkQueue m_present_queue;
 	};
 	
-	class device_object {
+	class i_device_object {
 		
 		public:
 		
-		device_object(vk::device& t_device);
-		device_object(vk::device_object& t_device_object);
-		~device_object();
+		virtual ~i_device_object();
 		
 		vk::device& get_device();
 		const vk::device& get_device() const;
 		
 		protected:
 		
+		i_device_object(vk::device& t_device);
+		i_device_object(vk::i_device_object& t_i_device_object);
 		vk::device& m_device;
 	};
 }

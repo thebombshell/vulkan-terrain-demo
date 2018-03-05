@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class command_pool : public device_object {
+	class command_pool : public i_device_object {
 		
 		public:
 		

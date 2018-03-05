@@ -166,24 +166,24 @@ void vk::device::queue_pressent(std::vector<VkSemaphore>& t_semaphores, std::vec
 		, m_present_queue, &present_info)
 }
 
-vk::device_object::device_object(vk::device& t_device) : m_device{t_device} {
+vk::i_device_object::i_device_object(vk::device& t_device) : m_device{t_device} {
 	
 }
 
-vk::device_object::device_object(vk::device_object& t_device_object) : m_device{t_device_object.m_device} {
+vk::i_device_object::i_device_object(vk::i_device_object& t_i_device_object) : m_device{t_i_device_object.m_device} {
 	
 }
 
-vk::device_object::~device_object() {
+vk::i_device_object::~i_device_object() {
 	
 }
 
-vk::device& vk::device_object::get_device() {
+vk::device& vk::i_device_object::get_device() {
 	
 	return m_device;
 }
 
-const vk::device& vk::device_object::get_device() const {
+const vk::device& vk::i_device_object::get_device() const {
 	
 	return m_device;
 }

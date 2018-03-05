@@ -31,7 +31,7 @@ const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT,
 vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_extent, VkFormat t_format
 	, const std::vector<vk::shader_module*>& t_shader_modules
 	, const vk::vertex_definition& t_definition)
-	: device_object{t_device}, m_shader_modules{t_shader_modules.begin(), t_shader_modules.end()}
+	: i_device_object{t_device}, m_shader_modules{t_shader_modules.begin(), t_shader_modules.end()}
 	, m_pipeline_layout{nullptr}, m_render_pass{nullptr} {
 	
 	VkPipelineVertexInputStateCreateInfo vertex_input_info;

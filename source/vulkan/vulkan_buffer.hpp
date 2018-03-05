@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class buffer : public device_object {
+	class buffer : public i_device_object {
 		
 		public:
 		

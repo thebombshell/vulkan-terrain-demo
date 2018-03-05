@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class pipeline_layout : public device_object {
+	class pipeline_layout : public i_device_object {
 		
 		public:
 		

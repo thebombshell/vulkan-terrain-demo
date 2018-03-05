@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class command_buffer : public device_object {
+	class command_buffer : public i_device_object {
 		
 		public:
 		

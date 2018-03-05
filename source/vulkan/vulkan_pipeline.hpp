@@ -29,7 +29,7 @@ namespace vk {
 		VkPipeline m_pipeline;
 	};
 	
-	class graphics_pipeline : public device_object, public i_pipeline {
+	class graphics_pipeline : public i_device_object, public i_pipeline {
 		
 		public:
 		

@@ -8,7 +8,7 @@
 
 #include "vulkan_fence.hpp"
 
-vk::fence::fence(vk::device& t_device) : device_object{t_device} {
+vk::fence::fence(vk::device& t_device) : i_device_object{t_device} {
 	
 	VkFenceCreateInfo fence_info = {};
 	fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;

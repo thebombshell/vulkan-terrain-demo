@@ -8,7 +8,7 @@
 
 #include "vulkan_semaphore.hpp"
 
-vk::semaphore::semaphore(vk::device& t_device) : device_object{t_device} {
+vk::semaphore::semaphore(vk::device& t_device) : i_device_object{t_device} {
 	
 	VkSemaphoreCreateInfo semaphore_info = {};
 	semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

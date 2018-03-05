@@ -14,7 +14,7 @@
 #include "vulkan_render_pass.hpp"
 
 vk::command_buffer::command_buffer(vk::command_pool& t_command_pool) 
-	: device_object{t_command_pool}, m_command_pool{t_command_pool} {
+	: i_device_object{t_command_pool}, m_command_pool{t_command_pool} {
 	
 	VkCommandBufferAllocateInfo command_buffer_info = {};
 	command_buffer_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

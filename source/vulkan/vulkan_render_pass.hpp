@@ -14,7 +14,7 @@
 
 namespace vk {
 	
-	class render_pass : public device_object {
+	class render_pass : public i_device_object {
 	
 	public:
 	

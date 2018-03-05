@@ -10,7 +10,7 @@
 #include "vulkan_physical_device.hpp"
 
 vk::buffer::buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode) 
-	: device_object{t_device} {
+	: i_device_object{t_device} {
 	
 	VkBufferCreateInfo buffer_info = {};
 	buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;

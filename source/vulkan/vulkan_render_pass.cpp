@@ -13,7 +13,7 @@ vk::render_pass::render_pass
 	( vk::device& t_device
 	, const VkAttachmentDescription* t_color_attachments, uint32_t t_color_attachment_count
 	, const VkSubpassDescription* t_subpasses, uint32_t t_subpass_count
-	, const VkSubpassDependency* t_subpass_dependancies, uint32_t t_subpass_dependency_count) : device_object{t_device} {
+	, const VkSubpassDependency* t_subpass_dependancies, uint32_t t_subpass_dependency_count) : i_device_object{t_device} {
 	
 	VkRenderPassCreateInfo render_pass_info = {};
 	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
