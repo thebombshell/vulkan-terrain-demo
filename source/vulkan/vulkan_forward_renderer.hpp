@@ -10,7 +10,7 @@
 
 namespace vk {
 	
-	class instance {
+	class mesh_instance {
 	
 		public:
 		
@@ -32,11 +32,11 @@ namespace vk {
 		scene();
 		~scene();
 		
-		vk::instance& create_mesh_instance(const std::string& m_name);
+		vk::mesh_instance& create_mesh_instance(const std::string& m_name);
 		
 		private:
 		
-		std::vector<instance*> m_instances;
+		std::vector<vk::mesh_instance*> m_instances;
 	};
 	
 	class forward_renderer {
