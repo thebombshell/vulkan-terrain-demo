@@ -22,6 +22,9 @@ namespace vk {
 		~fence();
 		
 		VkFence get_fence();
+		void wait(uint64_t t_timeout = 0);
+		void reset();
+		void wait_and_reset();
 		
 		private:
 		

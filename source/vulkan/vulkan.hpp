@@ -118,6 +118,7 @@ namespace vk {
 	class image_reference;
 	class image_view;
 	class instance;
+	class mesh;
 	class pipeline_layout;
 	class physical_device;
 	class query_pool;
@@ -133,7 +134,10 @@ namespace vk {
 	class surface;
 	class swapchain;
 	class validation;
+	class vertex_attribute;
+	class vertex_binding;
 	class vertex_buffer;
+	class vertex_definition;
 }
 
 #endif

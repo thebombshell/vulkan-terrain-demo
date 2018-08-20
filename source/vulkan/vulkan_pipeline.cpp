@@ -8,6 +8,7 @@
 
 #include "vulkan_pipeline.hpp"
 #include "vulkan_device.hpp"
+#include "vulkan_mesh.hpp"
 #include "vulkan_pipeline_layout.hpp"
 #include "vulkan_render_pass.hpp"
 #include "vulkan_shader_module.hpp"

@@ -1,7 +1,7 @@
 
 // vulkan_mesh.hpp
 //
-// header file for VKCPP mesh class
+// header file for VKCPP mesh helper classes
 //
 // author - Scott R Howell - https://github.com/thebombshell
 // copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
@@ -11,29 +11,32 @@
 
 namespace vk {
 	
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_ERROR{"!"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_POSITION{"POS"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_COLOR{"COL"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_NORMAL{"NRM"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_TANGENT{"TAN"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_BITANGENT{"BTN"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_TEXCOORD0{"UV0"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_TEXCOORD1{"UV1"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_TEXCOORD2{"UV2"};
-	const std::string VKCPP_VERTEX_ATTRIBUTE_NAME_TEXCOORD3{"UV3"};
+	namespace vertex_purpose {
+		
+		static const uint32_t VERR {0x00000000};
+		static const uint32_t VPOS {0x00000001};
+		static const uint32_t VCOL {0x00000002};
+		static const uint32_t VNRM {0x00000003};
+		static const uint32_t VTAN {0x00000004};
+		static const uint32_t VBTN {0x00000005};
+		static const uint32_t VUV0 {0x00000006};
+		static const uint32_t VUV1 {0x00000007};
+		static const uint32_t VUV2 {0x00000008};
+		static const uint32_t VUV3 {0x0000000a};
+	};
 	
 	class vertex_attribute {
 		
 		public:
 		
 		vertex_attribute(const VkFormat& t_format, uint32_t t_offset);
-		vertex_attribute(const std::string& t_purpose, uint32_t t_offset);
+		vertex_attribute(uint32_t t_purpose, uint32_t t_offset);
 		vertex_attribute(const vertex_attribute& t_other) = default;
 		~vertex_attribute();
 		
-		static VkFormat find_format(const std::string& t_purpose);
+		static VkFormat find_format(uint32_t t_purpose);
 		
-		const std::string purpose;
+		const uint32_t purpose;
 		const VkFormat format;
 		const uint32_t offset;
 	};
@@ -61,23 +64,4 @@ namespace vk {
 		const std::vector<vk::vertex_binding> bindings;
 	};
 	
-	class mesh : public i_device_object {
-		
-		public:
-		
-		mesh(vk::device& t_device, const vk::vertex_definition& t_vertex_definition, uint32_t t_index_count, uint32_t t_vertex_count);
-		mesh(const mesh& t_other) = delete;
-		virtual ~mesh();
-		
-		vk::staged_index_buffer& get_index_buffer();
-		const vk::staged_index_buffer& get_index_buffer() const;
-		const std::vector<vk::staged_vertex_buffer*>& get_vertex_buffers() const;
-		
-		protected:
-		
-		const vk::vertex_definition& m_vertex_definition;
-		
-		vk::staged_index_buffer m_index_buffer;
-		std::vector<vk::staged_vertex_buffer*> m_vertex_buffers;
-	};
 }

@@ -7,13 +7,14 @@
 // copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
 #include "vulkan_fence.hpp"
+#include <limits>
 
 vk::fence::fence(vk::device& t_device) : i_device_object{t_device} {
 	
 	VkFenceCreateInfo fence_info = {};
 	fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fence_info.pNext = nullptr;
-	fence_info.flags = 0;
+	fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 	
 	VK_DEBUG
 		( vkCreateFence
@@ -29,4 +30,26 @@ vk::fence::~fence() {
 VkFence vk::fence::get_fence() {
 	
 	return m_fence;
+}
+
+void vk::fence::wait(uint64_t t_timeout) {
+	
+	VK_DEBUG
+		( vkWaitForFences
+		, "Failed to wait for fence"
+		, m_device.get_device(), 1, &m_fence, true, t_timeout);
+}
+
+void vk::fence::reset() {
+	
+	VK_DEBUG
+		( vkResetFences
+		, "Failed to reset fence"
+		, m_device.get_device(), 1, &m_fence);
+}
+
+void vk::fence::wait_and_reset() {
+	
+	wait(std::numeric_limits<uint64_t>::max());
+	reset();
 }

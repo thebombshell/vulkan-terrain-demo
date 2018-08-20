@@ -11,7 +11,6 @@
 
 #include "vulkan.hpp"
 #include "vulkan_device.hpp"
-#include "vulkan_mesh.hpp"
 
 namespace vk {
 	
@@ -42,8 +41,6 @@ namespace vk {
 		const vk::render_pass& get_render_pass() const;
 		
 		private:
-		
-		void create_pipeline();
 		
 		std::vector<vk::shader_module*> m_shader_modules;
 		vk::pipeline_layout* m_pipeline_layout;

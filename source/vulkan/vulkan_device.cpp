@@ -140,15 +140,15 @@ int vk::device::get_present_queue_family_index() const {
 	return m_present_queue_family_index;
 }
 
-void vk::device::submit_graphical_queue( const VkSubmitInfo* t_submit_infos, uint32_t t_submit_info_count, vk::fence* t_fence) {
+void vk::device::submit_graphical_queue(const std::vector<VkSubmitInfo>& t_submit_infos, vk::fence* t_fence) {
 	
 	VK_DEBUG
 		( vkQueueSubmit
 		, "Failed to submit queue"
-		, m_graphical_queue, t_submit_info_count, t_submit_infos, (t_fence ? t_fence->get_fence() : VK_NULL_HANDLE))
+		, m_graphical_queue, t_submit_infos.size(), &t_submit_infos[0], (t_fence ? t_fence->get_fence() : VK_NULL_HANDLE))
 }
 
-void vk::device::queue_pressent(std::vector<VkSemaphore>& t_semaphores, std::vector<VkSwapchainKHR>& t_swapchains, std::vector<uint32_t>& t_image_indices) {
+void vk::device::queue_present(std::vector<VkSemaphore>& t_semaphores, std::vector<VkSwapchainKHR>& t_swapchains, std::vector<uint32_t>& t_image_indices) {
 	
 	VkPresentInfoKHR present_info = {};
 	present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

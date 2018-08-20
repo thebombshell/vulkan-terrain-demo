@@ -55,10 +55,6 @@ vk::context::~context() {
 	
 	vkDeviceWaitIdle(m_device->get_device());
 	
-	for (auto* t_framebuffer : m_framebuffers) {
-		
-		delete t_framebuffer;
-	}
 	if (m_swapchain) {
 		
 		delete m_swapchain;

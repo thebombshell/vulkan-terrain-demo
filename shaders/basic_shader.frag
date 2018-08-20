@@ -2,9 +2,10 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 layout(location = 0) in vec4 varying_color;
+layout(location = 1) in vec3 varying_normal;
 layout(location = 0) out vec4 out_color;
 
 void main() {
 	
-	out_color = varying_color;
+	out_color = vec4(varying_color.rgb * -dot(varying_normal, vec3(0.0, 0.0, -1.0)), 1.0);
 }

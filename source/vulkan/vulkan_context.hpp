@@ -36,7 +36,6 @@ namespace vk {
 		vk::surface* m_surface;
 		vk::device* m_device;
 		vk::swapchain* m_swapchain;
-		std::vector<vk::framebuffer*> m_framebuffers;
 	};
 }
 
