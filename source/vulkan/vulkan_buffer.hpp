@@ -14,7 +14,17 @@
 
 namespace vk {
 	
-	class buffer : public i_device_object {
+	class i_buffer : public i_device_object {
+		
+		public:
+		
+		i_buffer(vk::device& t_device);
+		virtual ~i_buffer() = 0;
+		
+		virtual VkBuffer get_buffer() = 0;
+	};
+	
+	class buffer : public i_buffer {
 		
 		public:
 		
@@ -31,18 +41,28 @@ namespace vk {
 		VkDeviceMemory m_device_memory;
 	};
 	
-	class staged_buffer : public buffer {
+	class staging_buffer : public buffer {
 		
 		public:
 		
-		staged_buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage);
+		staging_buffer(vk::device& t_device, uint32_t t_size);
+		virtual ~staging_buffer();
+	};
+	
+	class staged_buffer : public i_buffer {
+		
+		public:
+		
+		staged_buffer(vk::device& t_device, vk::i_buffer& t_source, uint32_t t_size, VkBufferUsageFlags t_usage);
 		virtual ~staged_buffer();
 		
 		VkBuffer get_buffer() override;
-		VkBuffer get_staging_buffer();
+		vk::i_buffer& get_staging_buffer();
+		const vk::i_buffer& get_staging_buffer() const;
 		
 		private:
 		
+		vk::i_buffer& m_source;
 		VkBuffer m_destination_buffer;
 		VkDeviceMemory m_destination_device_memory;
 	};
@@ -73,7 +93,7 @@ namespace vk {
 		
 		public:
 		
-		staged_vertex_buffer(vk::device& t_device, uint32_t t_size);
+		staged_vertex_buffer(vk::device& t_device, vk::i_buffer& t_source, uint32_t t_size);
 		virtual ~staged_vertex_buffer();
 		
 		private:
@@ -84,7 +104,7 @@ namespace vk {
 		
 		public:
 		
-		staged_index_buffer(vk::device& t_device, uint32_t t_size);
+		staged_index_buffer(vk::device& t_device, vk::i_buffer& t_source, uint32_t t_size);
 		virtual ~staged_index_buffer();
 		
 		private:

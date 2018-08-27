@@ -18,7 +18,7 @@ namespace vk {
 		
 		public:
 		
-		fence(vk::device& t_device);
+		fence(vk::device& t_device, VkFenceCreateFlags t_flags = VK_FENCE_CREATE_SIGNALED_BIT);
 		~fence();
 		
 		VkFence get_fence();

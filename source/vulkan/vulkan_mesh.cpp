@@ -14,6 +14,89 @@ using namespace vk::vertex_purpose;
 // vertex_attribute
 //
 
+vk::vertex::i_vertex::~i_vertex() {
+	
+}
+
+
+vk::vertex::i_pos_vertex::~i_pos_vertex() {
+	
+}
+
+vk::vertex::i_col_vertex::~i_col_vertex() {
+	
+}
+
+vk::vertex::i_nrm_vertex::~i_nrm_vertex() {
+	
+}
+
+vk::vertex::pos_col_nrm::pos_col_nrm
+	( float t_pos_x, float t_pos_y, float t_pos_z
+	, float t_col_r, float t_col_g, float t_col_b, float t_col_a
+	, float t_nrm_x, float t_nrm_y, float t_nrm_z ) : data
+		{ t_pos_x, t_pos_y, t_pos_z
+		, t_col_r, t_col_g, t_col_b, t_col_a
+		, t_nrm_x, t_nrm_y, t_nrm_z } {
+	
+}
+
+vk::vertex::pos_col_nrm::pos_col_nrm(): data
+		{ 0.0f, 0.0f, 0.0f
+		, 1.0f, 1.0f, 1.0f, 1.0f
+		, 0.0f, 0.0f, 1.0f } {
+}
+
+vk::vertex::pos_col_nrm::~pos_col_nrm() {
+}
+
+float* vk::vertex::pos_col_nrm::get_position() {
+	
+	return &data[0];
+}
+
+const float* vk::vertex::pos_col_nrm::get_position() const {
+	
+	return &data[0];
+}
+
+float* vk::vertex::pos_col_nrm::get_color() {
+	
+	return &data[3];
+}
+
+const float* vk::vertex::pos_col_nrm::get_color() const {
+	
+	return &data[3];
+}
+
+float* vk::vertex::pos_col_nrm::get_normal() {
+	
+	return &data[7];
+}
+
+const float* vk::vertex::pos_col_nrm::get_normal() const  {
+	
+	return &data[7];
+}
+
+const vk::vertex_definition& vk::vertex::pos_col_nrm::get_definition() const {
+	
+	return vk::vertex::pos_col_nrm::get_vertex_definition();
+}
+
+const vk::vertex_definition& vk::vertex::pos_col_nrm::get_vertex_definition() {
+	
+	static const std::vector<vk::vertex_attribute> attributes{{VPOS, 0}, {VCOL, sizeof(float) * 3}, {VNRM, sizeof(float) * 7}};
+	static const std::vector<vk::vertex_binding> bindings {{sizeof(vk::vertex::pos_col_nrm), attributes}};
+	static const vk::vertex_definition definition{ bindings };
+	return definition;
+}
+
+//
+// vertex_attribute
+//
+
 vk::vertex_attribute::vertex_attribute(const VkFormat& t_format, uint32_t t_offset) 
 	: purpose{VERR}, format{t_format}, offset{t_offset} {
 	

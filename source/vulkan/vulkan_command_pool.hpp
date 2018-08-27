@@ -18,7 +18,7 @@ namespace vk {
 		
 		public:
 		
-		command_pool(vk::device& t_device, uint32_t t_queue_family_index);
+		command_pool(vk::device& t_device, uint32_t t_queue_family_index, VkCommandPoolCreateFlags t_flags = 0);
 		~command_pool();
 		
 		VkCommandPool get_command_pool();

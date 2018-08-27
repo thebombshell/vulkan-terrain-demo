@@ -25,6 +25,94 @@ namespace vk {
 		static const uint32_t VUV3 {0x0000000a};
 	};
 	
+	namespace vertex {
+		
+		struct i_vertex {
+			
+			public:
+			
+			virtual ~i_vertex() = 0;
+			
+			virtual const vk::vertex_definition& get_definition() const = 0;
+			
+			protected:
+			
+			i_vertex() = default;
+		};
+		
+		struct i_pos_vertex : public virtual i_vertex {
+			
+			public:
+			
+			virtual ~i_pos_vertex() = 0;
+			
+			virtual float* get_position() = 0;
+			virtual const float* get_position() const = 0;
+			
+			protected:
+			
+			i_pos_vertex() = default;
+			
+		};
+		
+		struct i_col_vertex : public virtual i_vertex {
+			
+			public:
+			
+			virtual ~i_col_vertex() = 0;
+			
+			virtual float* get_color() = 0;
+			virtual const float* get_color() const = 0;
+			
+			protected:
+			
+			i_col_vertex() = default;
+			
+		};
+		
+		struct i_nrm_vertex : public virtual i_vertex {
+			
+			public:
+			
+			virtual ~i_nrm_vertex() = 0;
+			
+			virtual float* get_normal() = 0;
+			virtual const float* get_normal() const = 0;
+			
+			protected:
+			
+			i_nrm_vertex() = default;
+			
+		};
+		
+		struct pos_col_nrm : public i_pos_vertex, public i_col_vertex, public i_nrm_vertex {
+			
+			public:
+			
+			pos_col_nrm
+				( float t_pos_x, float t_pos_y, float t_pos_z
+				, float t_col_r, float t_col_g, float t_col_b, float t_col_a
+				, float t_nrm_x, float t_nrm_y, float t_nrm_z );
+			pos_col_nrm();
+			~pos_col_nrm();
+			
+			float* get_position() override;
+			const float* get_position() const override;
+			
+			float* get_color() override;
+			const float* get_color() const override;
+			
+			float* get_normal() override;
+			const float* get_normal() const override;
+			
+			const vk::vertex_definition& get_definition() const override;
+			static const vk::vertex_definition& get_vertex_definition();
+			
+			float data[10];
+		};
+		
+	}
+	
 	class vertex_attribute {
 		
 		public:

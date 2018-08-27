@@ -14,6 +14,36 @@
 
 namespace vk {
 	
+	VkAttachmentDescription get_present_attachment_description(VkFormat t_format);
+	
+	VkSubpassDescription get_graphics_subpass_description
+		( std::vector<VkAttachmentReference>* t_in_attachments = nullptr
+		, std::vector<VkAttachmentReference>* t_out_color_attachments = nullptr
+		, std::vector<VkAttachmentReference>* t_out_resolve_attachments = nullptr
+		, std::vector<VkAttachmentReference>* t_out_depth_stencil_attachments = nullptr
+		, std::vector<uint32_t>* t_preserve_attachments = nullptr);
+	
+	VkSubpassDescription get_compute_subpass_description
+		( std::vector<VkAttachmentReference>* t_in_attachments = nullptr
+		, std::vector<VkAttachmentReference>* t_out_color_attachments = nullptr
+		, std::vector<VkAttachmentReference>* t_out_resolve_attachments = nullptr
+		, std::vector<VkAttachmentReference>* t_out_depth_stencil_attachments = nullptr
+		, std::vector<uint32_t>* t_preserve_attachments = nullptr);
+	
+	VkSubpassDependency get_single_subpass_dependancy
+		( VkPipelineStageFlags t_source_stage = 0
+		, VkPipelineStageFlags t_destination_stage = 0
+		, VkAccessFlags t_source_access = 0
+		, VkAccessFlags t_destination_access = 0
+		, VkDependencyFlags t_dependancies = 0);
+		
+	VkSubpassDependency get_external_subpass_dependancy
+		( VkPipelineStageFlags t_source_stage = 0
+		, VkPipelineStageFlags t_destination_stage = 0
+		, VkAccessFlags t_source_access = 0
+		, VkAccessFlags t_destination_access = 0
+		, VkDependencyFlags t_dependancies = 0);
+	
 	class render_pass : public i_device_object {
 	
 	public:

@@ -32,7 +32,8 @@ namespace vk {
 		
 		public:
 		
-		graphics_pipeline(vk::device& t_device, VkExtent2D t_extent, VkFormat t_format
+		graphics_pipeline(vk::device& t_device,  vk::render_pass& t_render_pass
+			, VkExtent2D t_extent, VkFormat t_format
 			, const std::vector<vk::shader_module*>& t_shader_modules
 			, const vk::vertex_definition& t_definition);
 		~graphics_pipeline();
@@ -44,7 +45,7 @@ namespace vk {
 		
 		std::vector<vk::shader_module*> m_shader_modules;
 		vk::pipeline_layout* m_pipeline_layout;
-		vk::render_pass* m_render_pass;
+		vk::render_pass& m_render_pass;
 	};
 }
 

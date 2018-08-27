@@ -9,12 +9,12 @@
 #include "vulkan_fence.hpp"
 #include <limits>
 
-vk::fence::fence(vk::device& t_device) : i_device_object{t_device} {
+vk::fence::fence(vk::device& t_device, VkFenceCreateFlags t_flags) : i_device_object{t_device} {
 	
 	VkFenceCreateInfo fence_info = {};
 	fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fence_info.pNext = nullptr;
-	fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+	fence_info.flags = t_flags;
 	
 	VK_DEBUG
 		( vkCreateFence

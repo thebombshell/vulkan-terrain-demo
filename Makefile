@@ -9,7 +9,7 @@ CXX = $(MINGW)/bin/g++
 GDB = $(MINGW)/bin/gdb
 SPIRV = $(VULKAN)/bin/glslangValidator
 
-CFLAGS = -g -Og -std=c++11 -static-libgcc -static-libstdc++ -Wall -Werror -Wfatal-errors -DVK_USE_PLATFORM_WIN32_KHR
+CFLAGS = -Os -s -std=c++11 -static-libgcc -static-libstdc++ -Wall -Werror -Wfatal-errors -DVK_USE_PLATFORM_WIN32_KHR
 GDBFLAGS = -cd $(BUILD_DIR)
 SPIRVFLAGS = 
 

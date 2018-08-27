@@ -202,7 +202,7 @@ vk::validation::validation(vk::instance& t_instance) : m_instance{t_instance} {
 	VkDebugReportCallbackCreateInfoEXT callback_info = {};
 	callback_info.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 	callback_info.pNext = nullptr;
-	callback_info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+	callback_info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
 	callback_info.pfnCallback = debug_callback;
 	callback_info.pUserData = nullptr;
 	

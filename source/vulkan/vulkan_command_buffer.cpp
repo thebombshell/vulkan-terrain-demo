@@ -6,7 +6,6 @@
 // author - Scott R Howell - https://github.com/thebombshell
 // copyright - this document is free to use and transform, as long as authors and contributors are credited appropriately
 
-#include "vulkan_buffer.hpp"
 #include "vulkan_command_buffer.hpp"
 #include "vulkan_command_pool.hpp"
 #include "vulkan_framebuffer.hpp"
@@ -37,12 +36,20 @@ VkCommandBuffer vk::command_buffer::get_command_buffer() {
 	return m_command_buffer;
 }
 
+void vk::command_buffer::reset() {
+	
+	VK_DEBUG
+		( vkResetCommandBuffer
+		, "Failed to reset command buffer"
+		, m_command_buffer, 0)
+}
+
 void vk::command_buffer::begin() {
 	
 	VkCommandBufferBeginInfo command_buffer_begin_info = {};
 	command_buffer_begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	command_buffer_begin_info.pNext = nullptr;
-	command_buffer_begin_info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	command_buffer_begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 	command_buffer_begin_info.pInheritanceInfo = nullptr;
 	
 	VK_DEBUG
@@ -71,7 +78,7 @@ void vk::command_buffer::bind_pipeline(vk::i_pipeline& t_pipeline) {
 	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, t_pipeline.get_pipeline());
 }
 
-void vk::command_buffer::bind_vertex_buffers(std::vector<vk::buffer*>& t_buffers) {
+void vk::command_buffer::bind_vertex_buffers(std::vector<vk::i_buffer*>& t_buffers) {
 	
 	std::vector<VkBuffer> buffers {t_buffers.size()};
 	std::vector<VkDeviceSize> offsets {t_buffers.size()};
@@ -83,18 +90,18 @@ void vk::command_buffer::bind_vertex_buffers(std::vector<vk::buffer*>& t_buffers
 	vkCmdBindVertexBuffers(m_command_buffer, 0, static_cast<uint32_t>(buffers.size()), buffers.data(), offsets.data());
 }
 
-void vk::command_buffer::bind_index_buffer(vk::buffer& t_buffer, VkIndexType t_index_type) {
+void vk::command_buffer::bind_index_buffer(vk::i_buffer& t_buffer, VkIndexType t_index_type) {
 	
 	vkCmdBindIndexBuffer(m_command_buffer, t_buffer.get_buffer(), 0, t_index_type);
 }
 
-void vk::command_buffer::copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size) {
+void vk::command_buffer::copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size, uint32_t t_source_offset, uint32_t t_destination_offset) {
 	
 	VkBufferCopy buffer_copy = {};
-	buffer_copy.srcOffset = 0;
-	buffer_copy.dstOffset = 0;
+	buffer_copy.srcOffset = t_source_offset;
+	buffer_copy.dstOffset = t_destination_offset;
 	buffer_copy.size = t_size;
-	vkCmdCopyBuffer(m_command_buffer, t_buffer.get_staging_buffer(), t_buffer.get_buffer(), 1, &buffer_copy);
+	vkCmdCopyBuffer(m_command_buffer, t_buffer.get_staging_buffer().get_buffer(), t_buffer.get_buffer(), 1, &buffer_copy);
 }
 
 void vk::command_buffer::draw(uint32_t t_vertex_count, uint32_t t_instance_count, uint32_t t_vertex_offset, uint32_t t_instance_offset) {

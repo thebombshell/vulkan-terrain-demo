@@ -9,8 +9,24 @@
 #include "vulkan_buffer.hpp"
 #include "vulkan_physical_device.hpp"
 
+//
+// i_buffer
+//
+
+vk::i_buffer::i_buffer(vk::device& t_device) : i_device_object{t_device} {
+	
+}
+
+vk::i_buffer::~i_buffer() {
+	
+}
+
+//
+// buffer
+//
+
 vk::buffer::buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode) 
-	: i_device_object{t_device} {
+	: i_buffer{t_device} {
 	
 	VkBufferCreateInfo buffer_info = {};
 	buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -71,8 +87,26 @@ VkBuffer vk::buffer::get_buffer() {
 	return m_buffer;
 }
 
-vk::staged_buffer::staged_buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage) 
+//
+// staging_buffer
+//
+
+vk::staging_buffer::staging_buffer(vk::device& t_device, uint32_t t_size) 
 	: buffer{t_device, t_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_SHARING_MODE_EXCLUSIVE} {
+		
+}
+
+vk::staging_buffer::~staging_buffer() {
+	
+	
+}
+
+//
+// staged_buffer
+//
+
+vk::staged_buffer::staged_buffer(vk::device& t_device, vk::i_buffer& t_source, uint32_t t_size, VkBufferUsageFlags t_usage) 
+	: i_buffer{t_device}, m_source{t_source} {
 	
 	VkBufferCreateInfo buffer_info = {};
 	buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -122,9 +156,14 @@ VkBuffer vk::staged_buffer::get_buffer() {
 	return m_destination_buffer;
 }
 
-VkBuffer vk::staged_buffer::get_staging_buffer() {
+vk::i_buffer& vk::staged_buffer::get_staging_buffer() {
 	
-	return m_buffer;
+	return m_source;
+}
+
+const vk::i_buffer& vk::staged_buffer::get_staging_buffer() const {
+	
+	return m_source;
 }
 
 vk::vertex_buffer::vertex_buffer(vk::device& t_device, uint32_t t_size) 
@@ -149,8 +188,8 @@ vk::index_buffer::~index_buffer() {
 	
 }
 
-vk::staged_vertex_buffer::staged_vertex_buffer(vk::device& t_device, uint32_t t_size) 
-	: staged_buffer{t_device, t_size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT} {
+vk::staged_vertex_buffer::staged_vertex_buffer(vk::device& t_device, vk::i_buffer& t_source, uint32_t t_size) 
+	: staged_buffer{t_device, t_source, t_size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT} {
 	
 	
 }
@@ -160,8 +199,8 @@ vk::staged_vertex_buffer::~staged_vertex_buffer() {
 	
 }
 
-vk::staged_index_buffer::staged_index_buffer(vk::device& t_device, uint32_t t_size) 
-	: staged_buffer{t_device, t_size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT} {
+vk::staged_index_buffer::staged_index_buffer(vk::device& t_device, vk::i_buffer& t_source, uint32_t t_size) 
+	: staged_buffer{t_device, t_source, t_size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT} {
 	
 	
 }

@@ -29,11 +29,12 @@ VkPipeline vk::i_pipeline::get_pipeline() {
 
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
-vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_extent, VkFormat t_format
+vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& t_render_pass
+	, VkExtent2D t_extent, VkFormat t_format
 	, const std::vector<vk::shader_module*>& t_shader_modules
 	, const vk::vertex_definition& t_definition)
 	: i_device_object{t_device}, m_shader_modules{t_shader_modules.begin(), t_shader_modules.end()}
-	, m_pipeline_layout{nullptr}, m_render_pass{nullptr} {
+	, m_pipeline_layout{nullptr}, m_render_pass{t_render_pass} {
 	
 	VkPipelineVertexInputStateCreateInfo vertex_input_info;
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_info;
@@ -44,9 +45,6 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_exte
 	VkPipelineMultisampleStateCreateInfo multisample_info;
 	VkPipelineColorBlendAttachmentState color_blend_state;
 	VkPipelineColorBlendStateCreateInfo color_blend_info;
-	VkAttachmentDescription color_attachment;
-	VkAttachmentReference color_attachment_reference;
-	VkSubpassDescription sub_pass;
 	
 	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_info;
 	shader_stage_info.resize(t_shader_modules.size());
@@ -83,6 +81,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_exte
 			input_attributes.push_back(input_attribute);
 		}
 	}
+	
 	vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertex_input_info.pNext = nullptr;
 	vertex_input_info.flags = 0;
@@ -161,41 +160,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_exte
 	color_blend_info.blendConstants[2] = 0.0f;
 	color_blend_info.blendConstants[3] = 0.0f;
 	
-	color_attachment.flags = 0;
-	color_attachment.format = t_format;
-	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	
-	color_attachment_reference.attachment = 0;
-	color_attachment_reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	
-	sub_pass.flags = 0;
-	sub_pass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	sub_pass.inputAttachmentCount = 0;
-	sub_pass.pInputAttachments = nullptr;
-	sub_pass.colorAttachmentCount = 1;
-	sub_pass.pColorAttachments = &color_attachment_reference;
-	sub_pass.pResolveAttachments = nullptr;
-	sub_pass.pDepthStencilAttachment = nullptr;
-	sub_pass.preserveAttachmentCount = 0;
-	sub_pass.pPreserveAttachments = nullptr;
-	
-	VkSubpassDependency subpass_dependancy = {};
-	subpass_dependancy.srcSubpass = VK_SUBPASS_EXTERNAL;
-	subpass_dependancy.dstSubpass = 0;
-	subpass_dependancy.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	subpass_dependancy.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	subpass_dependancy.srcAccessMask = 0;
-	subpass_dependancy.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	subpass_dependancy.dependencyFlags = 0;
-	
 	m_pipeline_layout = new vk::pipeline_layout(m_device, nullptr, 0, nullptr, 0);
-	m_render_pass = new vk::render_pass(m_device, &color_attachment, 1, &sub_pass, 1, &subpass_dependancy, 1);
 	
 	VkGraphicsPipelineCreateInfo pipeline_info = {};
 	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -213,7 +178,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, VkExtent2D t_exte
 	pipeline_info.pColorBlendState = &color_blend_info;
 	pipeline_info.pDynamicState = nullptr;
 	pipeline_info.layout = m_pipeline_layout->get_pipeline_layout();
-	pipeline_info.renderPass = m_render_pass->get_render_pass();
+	pipeline_info.renderPass = m_render_pass.get_render_pass();
 	pipeline_info.subpass = 0;
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex = -1;
@@ -233,26 +198,14 @@ vk::graphics_pipeline::~graphics_pipeline() {
 		
 		delete m_pipeline_layout;
 	}
-	if (m_render_pass) {
-		
-		delete m_render_pass;
-	}
 }
 
 vk::render_pass& vk::graphics_pipeline::get_render_pass() {
 	
-	if (!m_render_pass) {
-		
-		throw vk::vulkan_exception("render pass has not successfully been created and can not be returned.");
-	}
-	return *m_render_pass;
+	return m_render_pass;
 }
 
 const vk::render_pass& vk::graphics_pipeline::get_render_pass() const {
 	
-	if (!m_render_pass) {
-		
-		throw vk::vulkan_exception("render pass has not successfully been created and can not be returned.");
-	}
-	return *m_render_pass;
+	return m_render_pass;
 }

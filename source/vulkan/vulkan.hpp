@@ -106,6 +106,7 @@ namespace vk {
 	class event;
 	class fence;
 	class forward_renderer;
+	class forward_renderer_draw;
 	class framebuffer;
 	class graphics_pipeline;
 	class i_asset;
@@ -122,6 +123,7 @@ namespace vk {
 	class pipeline_layout;
 	class physical_device;
 	class query_pool;
+	class render_frame;
 	class render_pass;
 	class sampler;
 	class scene;
