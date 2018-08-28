@@ -109,6 +109,11 @@ void vk::command_buffer::draw(uint32_t t_vertex_count, uint32_t t_instance_count
 	vkCmdDraw(m_command_buffer, t_vertex_count, t_instance_count, t_vertex_offset, t_instance_offset);
 }
 
+void vk::command_buffer::draw_indexed(uint32_t t_index_count, uint32_t t_instance_count, uint32_t t_index_offset, uint32_t t_vertex_offset, uint32_t t_instance_offset) {
+	
+	vkCmdDrawIndexed(m_command_buffer, t_index_count, t_instance_count, t_index_offset, t_vertex_offset, t_instance_offset);
+}
+
 void vk::command_buffer::end_render_pass() {
 	
 	vkCmdEndRenderPass(m_command_buffer);

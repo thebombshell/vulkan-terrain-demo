@@ -44,7 +44,7 @@ class vk::forward_renderer::draw_object {
 	}
 	void draw(vk::command_buffer& t_command_buffer) {
 		
-		t_command_buffer.draw(m_element_count, 1, 0, 0);
+		t_command_buffer.draw_indexed(m_element_count);
 	}
 	
 	private:

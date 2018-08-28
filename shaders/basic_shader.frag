@@ -7,5 +7,5 @@ layout(location = 0) out vec4 out_color;
 
 void main() {
 	
-	out_color = vec4(varying_color.rgb * -dot(varying_normal, vec3(0.0, 0.0, -1.0)), 1.0);
+	out_color = vec4(varying_color.rgb, 1.0);
 }

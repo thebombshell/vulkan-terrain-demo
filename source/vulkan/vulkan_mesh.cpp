@@ -88,7 +88,7 @@ const vk::vertex_definition& vk::vertex::pos_col_nrm::get_definition() const {
 const vk::vertex_definition& vk::vertex::pos_col_nrm::get_vertex_definition() {
 	
 	static const std::vector<vk::vertex_attribute> attributes{{VPOS, 0}, {VCOL, sizeof(float) * 3}, {VNRM, sizeof(float) * 7}};
-	static const std::vector<vk::vertex_binding> bindings {{sizeof(vk::vertex::pos_col_nrm), attributes}};
+	static const std::vector<vk::vertex_binding> bindings {{sizeof(float) * 10, attributes}};
 	static const vk::vertex_definition definition{ bindings };
 	return definition;
 }

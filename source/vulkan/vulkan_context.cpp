@@ -26,16 +26,16 @@
 vk::context::context(HWND t_window_handle, HINSTANCE t_handle_instance)
 	: m_instance{nullptr}, m_surface{nullptr}, m_device{nullptr}, m_swapchain{nullptr} {
 	
-	const char* const instance_layers[] = {
-		"VK_LAYER_LUNARG_standard_validation"
-	};
+	//const char* const instance_layers[] = {
+	//	"VK_LAYER_LUNARG_standard_validation"
+	//};
 	const char* const instance_extensions[] = {
 		"VK_KHR_surface", "VK_KHR_win32_surface", VK_EXT_DEBUG_REPORT_EXTENSION_NAME
 	};
 	const char* const device_extensions[] = {
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
-	m_instance = new vk::instance( instance_layers, 1, instance_extensions, 3);
+	m_instance = new vk::instance( nullptr, 0, instance_extensions, 3);
 	m_validation = new vk::validation(*m_instance);
 	for (auto* t_physical_device : m_instance->get_physical_devices()) {
 		

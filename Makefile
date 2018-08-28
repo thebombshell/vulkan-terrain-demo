@@ -1,5 +1,5 @@
 MINGW = C:/Program Files/mingw-w64/x86_64-7.2.0-win32-seh-rt_v5-rev1/mingw64
-VULKAN = C:/VulkanSDK/1.0.68.0
+VULKAN = C:/VulkanSDK/1.1.82.1
 SOURCE_DIR = source
 SHADER_DIR = shaders
 OBJECT_DIR = objects

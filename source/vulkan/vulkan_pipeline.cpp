@@ -93,7 +93,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& 
 	input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	input_assembly_info.pNext = nullptr;
 	input_assembly_info.flags = 0;
-	input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+	input_assembly_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	input_assembly_info.primitiveRestartEnable = VK_FALSE;
 	
 	VkExtent2D extent = t_extent;

@@ -34,6 +34,7 @@ namespace vk {
 		void bind_index_buffer(vk::i_buffer& t_buffer, VkIndexType t_index_type);
 		void copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size, uint32_t t_source_offset = 0, uint32_t t_destination_offset = 0);
 		void draw(uint32_t t_vertex_count, uint32_t t_instance_count = 1, uint32_t t_vertex_offset = 0, uint32_t t_instance_offset = 0);
+		void draw_indexed(uint32_t t_index_count, uint32_t t_instance_count = 1, uint32_t t_index_offset = 0, uint32_t t_vertex_offset = 0, uint32_t t_instance_offset = 0);
 		void end_render_pass();
 		void end();
 		
