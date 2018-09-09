@@ -98,6 +98,7 @@ namespace vk {
 	class command_buffer;
 	class context;
 	class descriptor_pool;
+	class descriptor_set;
 	class descriptor_set_layout;
 	class device;
 	class i_device_object;

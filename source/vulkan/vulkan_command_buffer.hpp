@@ -32,6 +32,7 @@ namespace vk {
 		void bind_pipeline(vk::i_pipeline& t_pipeline);
 		void bind_vertex_buffers(std::vector<vk::i_buffer*>& t_buffers);
 		void bind_index_buffer(vk::i_buffer& t_buffer, VkIndexType t_index_type);
+		void bind_descriptor_sets(std::vector<vk::descriptor_set*>& t_descriptor_sets, vk::pipeline_layout& t_layout, uint32_t t_offset = 0);
 		void copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size, uint32_t t_source_offset = 0, uint32_t t_destination_offset = 0);
 		void draw(uint32_t t_vertex_count, uint32_t t_instance_count = 1, uint32_t t_vertex_offset = 0, uint32_t t_instance_offset = 0);
 		void draw_indexed(uint32_t t_index_count, uint32_t t_instance_count = 1, uint32_t t_index_offset = 0, uint32_t t_vertex_offset = 0, uint32_t t_instance_offset = 0);

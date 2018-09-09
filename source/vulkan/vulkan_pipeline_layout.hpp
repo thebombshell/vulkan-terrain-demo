@@ -20,11 +20,11 @@ namespace vk {
 		
 		pipeline_layout
 			( vk::device& t_device
-			, const VkDescriptorSetLayout* t_set_layouts = nullptr, uint32_t t_set_layout_count = 0
+			, std::vector<vk::descriptor_set_layout*>& t_descriptors
 			, const VkPushConstantRange* t_push_constant_ranges = nullptr, uint32_t t_push_constant_range_count = 0);
 		~pipeline_layout();
 		
-		VkPipelineLayout get_pipeline_layout();
+		VkPipelineLayout get_pipeline_layout() const;
 		
 		private:
 		

@@ -25,7 +25,7 @@ vk::i_buffer::~i_buffer() {
 // buffer
 //
 
-vk::buffer::buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode) 
+vk::buffer::buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode, uint32_t t_queue_family_count, const uint32_t* t_queue_families ) 
 	: i_buffer{t_device} {
 	
 	VkBufferCreateInfo buffer_info = {};
@@ -35,8 +35,8 @@ vk::buffer::buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_u
 	buffer_info.size = t_size;
 	buffer_info.usage = t_usage;
 	buffer_info.sharingMode = t_sharing_mode;
-	buffer_info.queueFamilyIndexCount = 0;
-	buffer_info.pQueueFamilyIndices = nullptr;
+	buffer_info.queueFamilyIndexCount = t_queue_family_count;
+	buffer_info.pQueueFamilyIndices = t_queue_families;
 	
 	VK_DEBUG
 		( vkCreateBuffer
@@ -85,6 +85,11 @@ void vk::buffer::map(const void* t_data_pointer, uint32_t t_data_size) {
 VkBuffer vk::buffer::get_buffer() {
 	
 	return m_buffer;
+}
+
+VkDeviceMemory vk::buffer::get_device_memory() {
+	
+	return m_device_memory;
 }
 
 //
@@ -173,7 +178,6 @@ vk::vertex_buffer::vertex_buffer(vk::device& t_device, uint32_t t_size)
 }
 
 vk::vertex_buffer::~vertex_buffer() {
-	
 	
 }
 

@@ -9,7 +9,7 @@ CXX = $(MINGW)/bin/g++
 GDB = $(MINGW)/bin/gdb
 SPIRV = $(VULKAN)/bin/glslangValidator
 
-CFLAGS = -Os -s -std=c++11 -static-libgcc -static-libstdc++ -Wall -Werror -Wfatal-errors -DVK_USE_PLATFORM_WIN32_KHR
+CFLAGS = -g -std=c++11 -static-libgcc -static-libstdc++ -Wall -Werror -Wfatal-errors -DVK_USE_PLATFORM_WIN32_KHR
 GDBFLAGS = -cd $(BUILD_DIR)
 SPIRVFLAGS = 
 
@@ -26,10 +26,17 @@ LDDIR = -L$(VULKAN)/Lib
 LDLIBS = -lvulkan-1 -lgdi32
 LDFLAGS = $(LDDIR) $(LDLIBS)
 
+DEBUG = FALSE
+ifeq ($(DEBUG), TRUE)
+DEFINES =
+else
+DEFINES = -DNDEBUG
+endif
+
 all: vk_terrain_demo shaders
 
 vk_terrain_demo: main vulkan
-	$(CXX) $(CFLAGS) $(INC) $(MAIN_OBJECTS) $(VULKAN_OBJECTS) -o $(BUILD_DIR)/vk_terrain_demo $(LDFLAGS)
+	$(CXX) $(DEFINES) $(CFLAGS) $(INC) $(MAIN_OBJECTS) $(VULKAN_OBJECTS) -o $(BUILD_DIR)/vk_terrain_demo $(LDFLAGS)
 
 main: $(MAIN_OBJECTS)
 
@@ -38,10 +45,10 @@ vulkan: $(VULKAN_OBJECTS)
 shaders: $(SHADER_DIRECTORIES) $(SHADER_OBJECTS)
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(SOURCE_DIR)/%.hpp
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(DEFINES) $(CFLAGS) $(INC) -c $< -o $@
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/vulkan/%.cpp $(SOURCE_DIR)/vulkan/%.hpp
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(DEFINES) $(CFLAGS) $(INC) -c $< -o $@
 
 $(BUILD_DIR)/%.spv: $(SHADER_DIR)/%
 	$(SPIRV) $(SPIRVFLAGS) -V $< -o $@

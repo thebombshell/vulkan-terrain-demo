@@ -19,6 +19,7 @@ namespace vk {
 		public:
 		
 		image_view(vk::device& t_device, vk::i_image& t_image, VkFormat t_format);
+		image_view(vk::device& t_device, vk::i_image& t_image, VkFormat t_format, VkImageAspectFlags t_aspect_flags);
 		~image_view();
 		
 		vk::i_image& get_image();

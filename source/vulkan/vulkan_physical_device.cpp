@@ -92,6 +92,25 @@ uint32_t vk::physical_device::find_memory_index(uint32_t t_index, VkMemoryProper
 	return 0;
 }
 
+VkFormat vk::physical_device::find_supported_format(const std::vector<VkFormat>& t_candidates, VkFormatFeatureFlags t_features, VkImageTiling t_tiling) {
+	
+	VkFormatProperties t_format_properties;
+	
+	for (VkFormat t_format : t_candidates) {
+		
+		vkGetPhysicalDeviceFormatProperties(m_physical_device, t_format, &t_format_properties);
+		if (t_tiling == VK_IMAGE_TILING_LINEAR  && t_format_properties.linearTilingFeatures & t_features) {
+			
+			return t_format;
+		}
+		else if (t_tiling == VK_IMAGE_TILING_OPTIMAL && t_format_properties.optimalTilingFeatures & t_features) {
+			
+			return t_format;
+		}
+	}
+	return VK_FORMAT_UNDEFINED;
+}
+
 bool vk::physical_device::has_robust_buffer_access() const {
 	
 	return m_features.robustBufferAccess;
@@ -311,6 +330,13 @@ bool vk::physical_device::has_variable_multisample_rate() const {
 bool vk::physical_device::has_inherited_queries() const {
 	
 	return m_features.inheritedQueries;
+}
+
+VkFormatProperties vk::physical_device::get_format_properties(VkFormat t_format) {
+	
+	VkFormatProperties output;
+	vkGetPhysicalDeviceFormatProperties(m_physical_device, t_format, &output);
+	return output;
 }
 
 const std::vector<VkQueueFamilyProperties>& vk::physical_device::get_queue_family_properties() const {

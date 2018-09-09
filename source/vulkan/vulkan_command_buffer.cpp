@@ -8,8 +8,10 @@
 
 #include "vulkan_command_buffer.hpp"
 #include "vulkan_command_pool.hpp"
+#include "vulkan_descriptor_set.hpp"
 #include "vulkan_framebuffer.hpp"
 #include "vulkan_pipeline.hpp"
+#include "vulkan_pipeline_layout.hpp"
 #include "vulkan_render_pass.hpp"
 
 vk::command_buffer::command_buffer(vk::command_pool& t_command_pool) 
@@ -93,6 +95,17 @@ void vk::command_buffer::bind_vertex_buffers(std::vector<vk::i_buffer*>& t_buffe
 void vk::command_buffer::bind_index_buffer(vk::i_buffer& t_buffer, VkIndexType t_index_type) {
 	
 	vkCmdBindIndexBuffer(m_command_buffer, t_buffer.get_buffer(), 0, t_index_type);
+}
+
+void vk::command_buffer::bind_descriptor_sets(std::vector<vk::descriptor_set*>& t_descriptor_sets, vk::pipeline_layout& t_layout, uint32_t t_offset) {
+	
+	std::vector<VkDescriptorSet> descriptor_sets {t_descriptor_sets.size()};
+	for (uint32_t i = 0; i < t_descriptor_sets.size(); i++) {
+		
+		descriptor_sets[i] = t_descriptor_sets[i]->get_descriptor_set();
+	}
+	vkCmdBindDescriptorSets(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, t_layout.get_pipeline_layout(), t_offset
+		, static_cast<uint32_t>(descriptor_sets.size()), &descriptor_sets[0], 0, nullptr);
 }
 
 void vk::command_buffer::copy_staged_buffer(vk::staged_buffer& t_buffer, uint32_t t_size, uint32_t t_source_offset, uint32_t t_destination_offset) {

@@ -48,9 +48,19 @@ namespace vk {
 		// checks for and returns a memory type index matching the required index flag and property flags
 		//
 		// param - t_index - a flag index presumably returned by a memory requirements query
-		// param - t_property_flags - a set of property flags presumably returned by a memorry requirements query
+		// param - t_property_flags - a set of property flags presumably returned by a memory requirements query
 		// returns - the index of the matching memory type
 		uint32_t find_memory_index(uint32_t t_index, VkMemoryPropertyFlags t_property_flags);
+		
+		// find_supported_format
+		//
+		// check for and returns an image format matching the given candidates and required features
+		//
+		// param - t_candidates - a list of acceptable formats to check support for, preferred format recommended first
+		// param - t_features - a set of format feature flags describing required features for the format
+		// param - t_tiling - optional image tiling flag, describing the required data ordering of the image
+		// returns -
+		VkFormat find_supported_format(const std::vector<VkFormat>& t_candidates, VkFormatFeatureFlags t_features, VkImageTiling t_tiling = VK_IMAGE_TILING_OPTIMAL);
 		
 		// has_feature
 		//
@@ -114,8 +124,12 @@ namespace vk {
 		
 		// get_queue_family_properties
 		//
-		// returrns - a collection of VkQueueFamilyProperties relating to this physical device
+		// returns - a collection of VkQueueFamilyProperties relating to this physical device
 		const std::vector<VkQueueFamilyProperties>& get_queue_family_properties() const;
+		
+		// get_format_properties
+		//
+		VkFormatProperties get_format_properties(VkFormat t_format);
 		
 		// get_physical_device
 		//
@@ -128,6 +142,7 @@ namespace vk {
 		VkPhysicalDeviceProperties m_properties;
 		VkPhysicalDeviceFeatures m_features;
 		VkPhysicalDeviceMemoryProperties m_memory_properties;
+		VkFormatProperties m_format_properties;
 		std::vector<VkQueueFamilyProperties> m_queue_family_properties;
 		std::vector<VkExtensionProperties> m_extension_properties;
 		std::vector<VkSurfaceFormatKHR> m_surface_formats;

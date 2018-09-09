@@ -22,6 +22,8 @@ window* app_window;
 vk::context* vulkan;
 vk::forward_renderer* renderer;
 
+vk::staging_buffer* index_staging_buffer;
+vk::staging_buffer* vertex_staging_buffer;
 vk::staged_index_buffer* index_buffer;
 vk::staged_vertex_buffer* vertex_buffer;
 std::vector<vk::i_buffer*> vertex_buffers;
@@ -37,33 +39,33 @@ void render_init() {
 	vulkan = new vk::context{app_window->get_handle(), GetModuleHandle(0)};
 	renderer = new vk::forward_renderer(*vulkan);
 	
-	vk::staging_buffer index_staging_buffer{vulkan->get_device(), sizeof(uint16_t) * 36};
-	vk::staging_buffer vertex_staging_buffer{vulkan->get_device(), sizeof(float) * 10 * 8};
+	index_staging_buffer = new vk::staging_buffer(vulkan->get_device(), sizeof(uint16_t) * 36);
+	vertex_staging_buffer = new vk::staging_buffer(vulkan->get_device(), sizeof(float) * 10 * 8);
 	
 	float unit = 1.0f / sqrt(1.0f + 1.0f + 1.0f);
 	std::vector<uint16_t> index_data 
-		{ 0, 3, 2, 0, 2, 1
-		, 0, 1, 5, 0, 5, 4
-		, 0, 3, 7, 0, 7, 4
-		, 6, 7, 4, 6, 4, 5
-		, 6, 5, 1, 6, 1, 2
-		, 6, 7, 3, 6, 3, 2
+		{ 0, 4, 1, 4, 5, 1
+		, 1, 5, 2, 5, 6, 2
+		, 2, 6, 3, 6, 7, 3
+		, 3, 7, 0, 7, 4, 0
+		, 0, 1, 3, 1, 2, 3
+		, 5, 6, 4, 6, 7, 4
 		};
 	std::vector<float> vertex_data
-		{ -0.5f, -0.5f, 0.5f	, 0.0f, 0.0f, 0.0f, 1.0f, -unit, -unit, -unit
-		, 0.5f, -0.5f, 0.5f	, 1.0f, 0.0f, 0.0f, 1.0f, unit, -unit, -unit
-		, 0.5f, 0.5f, 0.5f		, 1.0f, 1.0f, 0.0f, 1.0f, unit, unit, -unit
-		, -0.5f, 0.5f, 0.5f	, 0.0f, 1.0f, 0.0f, 1.0f, -unit, unit, -unit
-		, -0.5f, -0.5f, 1.5f	, 0.0f, 0.0f, 1.0f, 1.0f, -unit, -unit, unit
-		, 0.5f, -0.5f, 1.5f		, 1.0f, 0.0f, 1.0f, 1.0f, unit, -unit, unit
-		, 0.5f, 0.5f, 1.5f		, 1.0f, 1.0f, 1.0f, 1.0f, unit, unit, unit
-		, -0.5f, 0.5f, 1.5f		, 0.0f, 1.0f, 1.0f, 1.0f, -unit, unit, unit
+		{ -0.5f, -0.5f, -0.5f	, 0.0f, 0.0f, 0.0f, 1.0f, -unit, -unit, -unit
+		, 0.5f, -0.5f, -0.5f	, 1.0f, 0.0f, 0.0f, 1.0f, unit, -unit, -unit
+		, 0.5f, 0.5f, -0.5f		, 1.0f, 1.0f, 0.0f, 1.0f, unit, unit, -unit
+		, -0.5f, 0.5f, -0.5f	, 0.0f, 1.0f, 0.0f, 1.0f, -unit, unit, -unit
+		, -0.5f, -0.5f, 0.5f	, 0.0f, 0.0f, 1.0f, 1.0f, -unit, -unit, unit
+		, 0.5f, -0.5f, 0.5f		, 1.0f, 0.0f, 1.0f, 1.0f, unit, -unit, unit
+		, 0.5f, 0.5f, 0.5f		, 1.0f, 1.0f, 1.0f, 1.0f, unit, unit, unit
+		, -0.5f, 0.5f, 0.5f		, 0.0f, 1.0f, 1.0f, 1.0f, -unit, unit, unit
 		};
-	index_staging_buffer.map(&index_data[0], sizeof(uint16_t) * 36);
-	vertex_staging_buffer.map(&vertex_data[0], sizeof(vk::vertex::pos_col_nrm) * 8);
+	index_staging_buffer->map(&index_data[0], sizeof(uint16_t) * 36);
+	vertex_staging_buffer->map(&vertex_data[0], sizeof(vk::vertex::pos_col_nrm) * 8);
 	
-	index_buffer = new vk::staged_index_buffer(vulkan->get_device(), index_staging_buffer, sizeof(uint16_t) * 36);
-	vertex_buffer = new vk::staged_vertex_buffer(vulkan->get_device(), vertex_staging_buffer, sizeof(float) * 10 * 8);
+	index_buffer = new vk::staged_index_buffer(vulkan->get_device(), *index_staging_buffer, sizeof(uint16_t) * 36);
+	vertex_buffer = new vk::staged_vertex_buffer(vulkan->get_device(), *vertex_staging_buffer, sizeof(float) * 10 * 8);
 	
 	vk::command_pool command_pool{vulkan->get_device(), static_cast<uint32_t>(vulkan->get_device().get_graphical_queue_family_index())};
 	vk::command_buffer command_buffer{command_pool};
@@ -100,6 +102,8 @@ void render_shutdown() {
 	
 	delete index_buffer;
 	delete vertex_buffer;
+	delete index_staging_buffer;
+	delete vertex_staging_buffer;
 	
 	delete renderer;
 	delete vulkan;

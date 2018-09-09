@@ -24,24 +24,40 @@ VkAttachmentDescription vk::get_present_attachment_description(VkFormat t_format
 		};
 }
 
+VkAttachmentDescription vk::get_depth_stencil_attachment_description(VkFormat t_format) {
+	
+	return 
+		{ 0
+		, t_format
+		, VK_SAMPLE_COUNT_1_BIT
+		, VK_ATTACHMENT_LOAD_OP_CLEAR
+		, VK_ATTACHMENT_STORE_OP_STORE
+		, VK_ATTACHMENT_LOAD_OP_DONT_CARE
+		, VK_ATTACHMENT_STORE_OP_DONT_CARE
+		, VK_IMAGE_LAYOUT_UNDEFINED
+		, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+		};
+}
+
+
 VkSubpassDescription vk::get_graphics_subpass_description
-	( std::vector<VkAttachmentReference>* t_in_attachments
-	, std::vector<VkAttachmentReference>* t_out_color_attachments
-	, std::vector<VkAttachmentReference>* t_out_resolve_attachments
-	, std::vector<VkAttachmentReference>* t_out_depth_stencil_attachments
-	, std::vector<uint32_t>* t_preserve_attachments) {
+	( uint32_t t_in_attachment_count, const VkAttachmentReference* t_in_attachments
+	, uint32_t t_out_color_count, const VkAttachmentReference* t_out_color_attachments
+	, const VkAttachmentReference* t_out_resolve_attachments
+	, const VkAttachmentReference* t_out_depth_stencil_attachments
+	, uint32_t t_preserve_count, const uint32_t* t_preserve_attachments) {
 	
 	return 
 		{ 0
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
-		, t_in_attachments ? static_cast<uint32_t>(t_in_attachments->size()) : 0
-		, t_in_attachments ? &(*t_in_attachments)[0] : nullptr
-		, t_out_color_attachments ? static_cast<uint32_t>(t_out_color_attachments->size()) : 0
-		, t_out_color_attachments ? &(*t_out_color_attachments)[0] : nullptr
-		, t_out_resolve_attachments ? &(*t_out_resolve_attachments)[0] : nullptr
-		, t_out_depth_stencil_attachments ? &(*t_out_depth_stencil_attachments)[0] : nullptr
-		, t_preserve_attachments ? static_cast<uint32_t>(t_preserve_attachments->size()) : 0
-		, t_preserve_attachments ? &(*t_preserve_attachments)[0] : nullptr
+		, t_in_attachment_count
+		, t_in_attachments
+		, t_out_color_count
+		, t_out_color_attachments
+		, t_out_resolve_attachments
+		, t_out_depth_stencil_attachments
+		, t_preserve_count
+		, t_preserve_attachments
 		};
 }
 VkSubpassDescription vk::get_compute_subpass_description

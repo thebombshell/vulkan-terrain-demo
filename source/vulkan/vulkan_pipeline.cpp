@@ -29,12 +29,12 @@ VkPipeline vk::i_pipeline::get_pipeline() {
 
 const std::vector<VkDynamicState> g_dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_LINE_WIDTH};
 
-vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& t_render_pass
+vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& t_render_pass, vk::pipeline_layout& t_pipeline_layout
 	, VkExtent2D t_extent, VkFormat t_format
 	, const std::vector<vk::shader_module*>& t_shader_modules
 	, const vk::vertex_definition& t_definition)
 	: i_device_object{t_device}, m_shader_modules{t_shader_modules.begin(), t_shader_modules.end()}
-	, m_pipeline_layout{nullptr}, m_render_pass{t_render_pass} {
+	, m_render_pass{t_render_pass} {
 	
 	VkPipelineVertexInputStateCreateInfo vertex_input_info;
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_info;
@@ -45,6 +45,7 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& 
 	VkPipelineMultisampleStateCreateInfo multisample_info;
 	VkPipelineColorBlendAttachmentState color_blend_state;
 	VkPipelineColorBlendStateCreateInfo color_blend_info;
+	VkPipelineDepthStencilStateCreateInfo depth_stencil_info;
 	
 	std::vector<VkPipelineShaderStageCreateInfo> shader_stage_info;
 	shader_stage_info.resize(t_shader_modules.size());
@@ -160,7 +161,18 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& 
 	color_blend_info.blendConstants[2] = 0.0f;
 	color_blend_info.blendConstants[3] = 0.0f;
 	
-	m_pipeline_layout = new vk::pipeline_layout(m_device, nullptr, 0, nullptr, 0);
+	depth_stencil_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depth_stencil_info.pNext = nullptr;
+	depth_stencil_info.flags = 0;
+	depth_stencil_info.depthTestEnable = VK_TRUE;
+	depth_stencil_info.depthWriteEnable = VK_TRUE;
+	depth_stencil_info.depthCompareOp = VK_COMPARE_OP_LESS;
+	depth_stencil_info.depthBoundsTestEnable = VK_FALSE;
+	depth_stencil_info.stencilTestEnable = VK_FALSE;
+	depth_stencil_info.front = {};
+	depth_stencil_info.back = {};
+	depth_stencil_info.minDepthBounds = 0.0f;
+	depth_stencil_info.maxDepthBounds = 1.0f;
 	
 	VkGraphicsPipelineCreateInfo pipeline_info = {};
 	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -174,10 +186,10 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& 
 	pipeline_info.pViewportState = &viewport_info;
 	pipeline_info.pRasterizationState = &rasterization_info;
 	pipeline_info.pMultisampleState = &multisample_info;
-	pipeline_info.pDepthStencilState = nullptr;
+	pipeline_info.pDepthStencilState = &depth_stencil_info;
 	pipeline_info.pColorBlendState = &color_blend_info;
 	pipeline_info.pDynamicState = nullptr;
-	pipeline_info.layout = m_pipeline_layout->get_pipeline_layout();
+	pipeline_info.layout = t_pipeline_layout.get_pipeline_layout();
 	pipeline_info.renderPass = m_render_pass.get_render_pass();
 	pipeline_info.subpass = 0;
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
@@ -193,11 +205,6 @@ vk::graphics_pipeline::graphics_pipeline(vk::device& t_device, vk::render_pass& 
 vk::graphics_pipeline::~graphics_pipeline() {
 	
 	vkDestroyPipeline(m_device.get_device(), m_pipeline, nullptr);
-	
-	if (m_pipeline_layout) {
-		
-		delete m_pipeline_layout;
-	}
 }
 
 vk::render_pass& vk::graphics_pipeline::get_render_pass() {

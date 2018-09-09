@@ -28,10 +28,11 @@ namespace vk {
 		
 		public:
 		
-		buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode);
+		buffer(vk::device& t_device, uint32_t t_size, VkBufferUsageFlags t_usage, VkSharingMode t_sharing_mode,  uint32_t t_queue_family_count = 0, const uint32_t* t_queue_families = nullptr);
 		virtual ~buffer();
 		
 		virtual VkBuffer get_buffer();
+		virtual VkDeviceMemory get_device_memory();
 		
 		void map(const void* t_data_pointer, uint32_t t_data_size);
 		
